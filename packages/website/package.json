@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "build": "node src/build.mjs",
-    "typecheck": "node --check src/build.mjs && node --check src/circuits.mjs && node --check src/components.mjs && node --check src/learn.mjs && node --check src/manual.mjs && node --check src/consent.mjs",
+    "typecheck": "node --check src/build.mjs && node --check src/layout.mjs && node --check src/styles.mjs && node --check src/components.mjs && node --check src/learn.mjs && node --check src/manual.mjs && node --check src/techniques.mjs && node --check src/consent.mjs && node --check src/gate.mjs",
     "test": "node --test test/build.test.mjs"
   },
   "devDependencies": {

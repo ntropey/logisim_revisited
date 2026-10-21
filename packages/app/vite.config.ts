@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
+  base: './',
   plugins: [react()],
   resolve: {
     alias: {
@@ -13,21 +14,20 @@ export default defineConfig({
     },
   },
   build: {
-    target: 'ES2022',
-    minify: 'esbuild',
     sourcemap: true,
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          core: ['@logisim/core'],
+        manualChunks(id: string) {
+          if (id.includes('node_modules/react')) return 'vendor';
+          if (id.includes('packages/core')) return 'core';
+          return undefined;
         },
       },
     },
   },
   server: {
     port: 5173,
-    open: true,
+    open: false,
   },
   worker: {
     format: 'es',

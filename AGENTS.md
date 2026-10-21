@@ -52,9 +52,11 @@ Before finishing a change, run `pnpm typecheck` and `pnpm test`, and the affecte
 ## Architecture notes
 
 - **Pure core engine.** `packages/core` has zero DOM or Node dependencies so it runs identically in
-  Node tests, the browser, or a Web Worker.
-- **The website is generated.** `packages/website/src/build.mjs` writes every page from string
-  literals and emits no separate JS assets (scripts are inlined, e.g. `gate.mjs`, `consent.mjs`).
+  Node tests, the browser, or a Web Worker. The app currently calls it synchronously on the main thread
+  (`state/useCircuitStore.ts`); move it to a worker only if circuits grow large enough to need it.
+- **The website is generated.** `packages/website/src/build.mjs` builds every page through the one shell in
+  `layout.mjs` (links are relative to the page, derived from its path) and writes `site.css` from `styles.mjs`,
+  which reuses the app's design tokens. Scripts are inlined, e.g. `gate.mjs`, `consent.mjs`.
   `/play/` is the app's own Vite build copied verbatim.
 - **Ads load only after consent.** `consent.mjs` adds Google Consent Mode v2 and the consent banner to
   every site page; the AdSense script is injected only after consent.

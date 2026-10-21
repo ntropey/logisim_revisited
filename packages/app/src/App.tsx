@@ -1,526 +1,373 @@
 /*
  * Logisim Revisited. GPL-3.0-or-later; see LICENSE.
- * Main App component - PWA shell with canvas, tool palette, and side panels.
+ * Application shell: top bar, parts palette, canvas, and the Inspect / Analyze / Challenge drawer.
  */
-
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { Canvas } from './canvas/Canvas';
-import { ToolPalette } from './canvas/ToolPalette';
-import { BottomSheet } from './ui/BottomSheet';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  getDailyChallenge,
+  hasErrorBit,
+  LOGIC_CHALLENGES,
+  parseCircXml,
+  PRESET_CIRCUITS,
+  serializeCircXml,
+  type Circuit,
+  type Facing,
+  type LogicChallenge,
+} from '@logisim/core';
+import { Canvas, NO_SELECTION, type CanvasHandle, type InspectTarget, type Selection } from './canvas/Canvas';
+import { SELECT, type PaletteItem, type Tool } from './canvas/tools';
+import { decodeCircuitHash, encodeCircuitUrl } from './lib/share';
+import { EMPTY_CIRCUIT, useCircuitStore } from './state/useCircuitStore';
+import { useSettings } from './state/useSettings';
+import { AnalysisPanel } from './ui/AnalysisPanel';
+import { ChallengePanel } from './ui/ChallengePanel';
+import { Icon, type IconName } from './ui/icons';
+import { Inspector } from './ui/Inspector';
+import { Palette } from './ui/Palette';
 import { SettingsSheet } from './ui/SettingsSheet';
-import { CoachPanel } from './ui/CoachPanel';
-import { TracePanel } from './ui/TracePanel';
-import { DailyChallenge } from './challenges/DailyChallenge';
-import { useCircuitStore } from './hooks/useCircuitStore';
-import { useSimulation } from './hooks/useSimulation';
-import { useSettings } from './hooks/useSettings';
-import { Circuit, ComponentInstance, Wire, SimulationResult, TraceStage, ComponentType } from '@logisim/core';
-import { PRESET_CIRCUITS, LOGIC_CHALLENGES, getDailyChallenge } from '@logisim/core';
-import type { LogicChallenge } from '@logisim/core';
+import { Sheet } from './ui/Sheet';
 
-type Tool = 'select' | 'poke' | 'wire' | ComponentType;
+type Tab = 'inspect' | 'analyze' | 'challenge';
+type Modal = 'settings' | 'presets' | null;
 
-interface AppState {
-  circuit: Circuit;
-  simResult: SimulationResult | null;
-  selectedIds: Set<string>;
-  tool: Tool;
-  wireStart: { compId: string; pinId: string; x: number; y: number } | null;
-  hoverNetId: string | null;
-  showSettings: boolean;
-  showCoach: boolean;
-  showTrace: boolean;
-  showChallenge: boolean;
-  currentChallenge: LogicChallenge | null;
-  coachStages: TraceStage[];
-  coachStageIndex: number;
-  traceStages: TraceStage[];
-  zoom: number;
-  pan: { x: number; y: number };
-}
+const TABS: { id: Tab; label: string; icon: IconName }[] = [
+  { id: 'inspect', label: 'Inspect', icon: 'bulb' },
+  { id: 'analyze', label: 'Analyze', icon: 'chart' },
+  { id: 'challenge', label: 'Challenges', icon: 'trophy' },
+];
+const FACINGS: Facing[] = ['east', 'south', 'west', 'north'];
+const NO_HIGHLIGHT = { components: [] as string[], nets: [] as string[] };
 
-const DEFAULT_CIRCUIT: Circuit = {
-  name: 'Untitled',
-  components: [],
-  wires: [],
-};
+const isTyping = (t: EventTarget | null) => t instanceof HTMLInputElement || t instanceof HTMLTextAreaElement || t instanceof HTMLSelectElement;
 
 export function App() {
-  const [state, setState] = useState<AppState>({
-    circuit: DEFAULT_CIRCUIT,
-    simResult: null,
-    selectedIds: new Set(),
-    tool: 'select',
-    wireStart: null,
-    hoverNetId: null,
-    showSettings: false,
-    showCoach: false,
-    showTrace: false,
-    showChallenge: false,
-    currentChallenge: null,
-    coachStages: [],
-    coachStageIndex: 0,
-    traceStages: [],
-    zoom: 1,
-    pan: { x: 0, y: 0 },
-  });
+  const store = useCircuitStore();
+  const { circuit, sim, commit, replace, load, checkpoint } = store;
+  const { settings, update: updateSettings } = useSettings();
+  const canvas = useRef<CanvasHandle>(null);
 
-  const { circuit, setCircuit, simResult, setSimResult, memState, setMemState } = useCircuitStore();
-  const { simulate, poke, stepClock, traceSignal, verify, analyze, synthesize } = useSimulation();
-  const { settings, setSettings } = useSettings();
+  const [tool, setTool] = useState<Tool>(SELECT);
+  const [selection, setSelection] = useState<Selection>(NO_SELECTION);
+  const [target, setTarget] = useState<InspectTarget | null>(null);
+  const [tab, setTab] = useState<Tab>('inspect');
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [partsOpen, setPartsOpen] = useState(false);
+  const [modal, setModal] = useState<Modal>(null);
+  const [challenge, setChallenge] = useState<LogicChallenge | null>(null);
+  const [inspectHl, setInspectHl] = useState(NO_HIGHLIGHT);
+  const [challengeHl, setChallengeHl] = useState<string[]>([]);
+  const [toast, setToast] = useState<string | null>(null);
+  const [loadVersion, setLoadVersion] = useState(0);
+  const importInput = useRef<HTMLInputElement>(null);
+  const spaceReturn = useRef<Tool | null>(null);
 
-  // Load from localStorage or URL on mount
-  useEffect(() => {
-    const saved = localStorage.getItem('logisim-circuit');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        setCircuit(parsed);
-      } catch {
-        // Ignore parse errors
-      }
-    }
-    // Check for challenge in URL
-    const params = new URLSearchParams(window.location.search);
-    const challengeId = params.get('challenge');
-    if (challengeId) {
-      const challenge = LOGIC_CHALLENGES.find(c => c.id === challengeId);
-      if (challenge) {
-        setState(s => ({ ...s, currentChallenge: challenge, circuit: challenge.starterCircuit, showChallenge: true }));
-        setCircuit(challenge.starterCircuit);
-      }
-    }
-    // Check for daily challenge
-    const daily = params.get('daily');
-    if (daily) {
-      const date = daily === '1' ? new Date().toISOString().split('T')[0] : daily;
-      const challenge = getDailyChallenge(date);
-      setState(s => ({ ...s, currentChallenge: challenge, circuit: challenge.starterCircuit, showChallenge: true }));
-      setCircuit(challenge.starterCircuit);
-    }
-  }, [setCircuit]);
-
-  // Auto-save circuit
-  useEffect(() => {
-    if (circuit.components.length > 0 || circuit.wires.length > 0) {
-      localStorage.setItem('logisim-circuit', JSON.stringify(circuit));
-    }
-  }, [circuit]);
-
-  // Run simulation when circuit changes
-  useEffect(() => {
-    const result = simulate(circuit, memState);
-    setSimResult(result);
-    setMemState(result.memState);
-  }, [circuit, memState, simulate, setSimResult, setMemState]);
-
-  const setTool = useCallback((tool: Tool) => {
-    setState(s => ({ ...s, tool, wireStart: null, selectedIds: new Set() }));
+  const say = useCallback((msg: string) => {
+    setToast(msg);
+    window.setTimeout(() => setToast((t) => (t === msg ? null : t)), 3500);
   }, []);
 
-  const handleCanvasClick = useCallback((e: React.MouseEvent<SVGSVGElement>) => {
-    const svg = e.currentTarget;
-    const pt = svg.createSVGPoint();
-    pt.x = e.clientX;
-    pt.y = e.clientY;
-    const ctm = svg.getScreenCTM()!;
-    const transformed = pt.matrixTransform(ctm.inverse());
-    const x = Math.round(transformed.x / 10) * 10;
-    const y = Math.round(transformed.y / 10) * 10;
+  const loadCircuit = useCallback(
+    (c: Circuit) => {
+      load(c);
+      setSelection(NO_SELECTION);
+      setTarget(null);
+      setLoadVersion((v) => v + 1);
+    },
+    [load],
+  );
 
-    setState(s => {
-      const { tool, circuit, selectedIds, wireStart, simResult } = s;
-      
-      if (tool === 'wire') {
-        // Find pin at this position
-        const pinHit = findPinAt(circuit, simResult, x, y);
-        if (pinHit) {
-          if (wireStart) {
-            // Complete wire
-            if (wireStart.compId !== pinHit.compId || wireStart.pinId !== pinHit.pinId) {
-              const newWire: Wire = {
-                id: `w_${Date.now()}`,
-                from: { x: wireStart.x, y: wireStart.y },
-                to: { x: pinHit.x, y: pinHit.y },
-              };
-              return {
-                ...s,
-                circuit: { ...circuit, wires: [...circuit.wires, newWire] },
-                wireStart: null,
-              };
-            }
-          } else {
-            // Start wire
-            return { ...s, wireStart: { ...pinHit, x, y } };
-          }
-        }
-        return { ...s, wireStart: null };
-      }
+  const startChallenge = useCallback(
+    (c: LogicChallenge) => {
+      setChallenge(c);
+      setTab('challenge');
+      setDrawerOpen(true);
+      loadCircuit(c.starterCircuit);
+    },
+    [loadCircuit],
+  );
 
-      if (tool === 'poke') {
-        // Find component at this position
-        const compHit = findComponentAt(circuit, x, y);
-        if (compHit && (compHit.type === 'Pin' && !compHit.attrs.output || compHit.type === 'Clock' || compHit.type === 'Button')) {
-          const newCircuit = poke(circuit, compHit.id);
-          return { ...s, circuit: newCircuit };
-        }
-        return s;
-      }
+  // Open whatever the URL asks for: a shared circuit, an example, or a challenge.
+  useEffect(() => {
+    const q = new URLSearchParams(location.search);
+    const shared = decodeCircuitHash(location.hash);
+    const preset = PRESET_CIRCUITS.find((p) => p.slug === q.get('p'));
+    const daily = q.get('daily');
+    const picked = LOGIC_CHALLENGES.find((c) => c.id === q.get('challenge'));
+    if (shared) loadCircuit(shared);
+    else if (preset) loadCircuit(preset.circuit);
+    else if (picked) startChallenge(picked);
+    else if (daily) startChallenge(getDailyChallenge(daily === '1' ? new Date().toISOString().slice(0, 10) : daily));
+    else setLoadVersion(1);
+  }, [loadCircuit, startChallenge]);
 
-      if (tool === 'select') {
-        const compHit = findComponentAt(circuit, x, y);
-        if (compHit) {
-          const newSelected = new Set(selectedIds);
-          if (e.shiftKey) {
-            newSelected.has(compHit.id) ? newSelected.delete(compHit.id) : newSelected.add(compHit.id);
-          } else {
-            newSelected.clear();
-            newSelected.add(compHit.id);
-          }
-          return { ...s, selectedIds: newSelected };
-        } else if (!e.shiftKey) {
-          return { ...s, selectedIds: new Set() };
-        }
-      }
+  useEffect(() => {
+    const id = requestAnimationFrame(() => canvas.current?.fit());
+    return () => cancelAnimationFrame(id);
+  }, [loadVersion]);
 
-      if (typeof tool === 'string' && tool !== 'select' && tool !== 'poke' && tool !== 'wire') {
-        // Place component
-        const catalog = PRESET_CIRCUITS.flatMap(p => p.circuit.components).find(c => c.type === tool);
-        const defaultComp = PRESET_CIRCUITS.find(p => p.circuit.components.some(c => c.type === tool))?.circuit.components.find(c => c.type === tool);
-        if (defaultComp) {
-          const newComp: ComponentInstance = {
-            ...defaultComp,
-            id: `comp_${Date.now()}`,
-            loc: { x, y },
-          };
-          return {
-            ...s,
-            circuit: { ...circuit, components: [...circuit.components, newComp] },
-            selectedIds: new Set([newComp.id]),
-            tool: 'select',
-          };
-        }
-      }
+  const pickPart = (item: PaletteItem) => {
+    setTool({ kind: 'place', item });
+    setSelection(NO_SELECTION);
+    setPartsOpen(false);
+  };
 
-      return s;
+  const deleteSelection = useCallback(() => {
+    if (!selection.comps.size && !selection.wires.size) return;
+    commit({
+      ...circuit,
+      components: circuit.components.filter((c) => !selection.comps.has(c.id)),
+      wires: circuit.wires.filter((w) => !selection.wires.has(w.id)),
     });
-  }, [poke]);
+    setSelection(NO_SELECTION);
+    setTarget(null);
+  }, [circuit, commit, selection]);
 
-  const handleKeyDown = useCallback((e: KeyboardEvent) => {
-    if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+  const rotateSelection = useCallback(() => {
+    if (!selection.comps.size) return;
+    commit({
+      ...circuit,
+      components: circuit.components.map((c) =>
+        selection.comps.has(c.id) ? { ...c, attrs: { ...c.attrs, facing: FACINGS[(FACINGS.indexOf(c.attrs.facing ?? 'east') + 1) % 4] } } : c,
+      ),
+    });
+  }, [circuit, commit, selection]);
 
-    setState(s => {
-      const { selectedIds, circuit, tool } = s;
-      
-      if (e.key === 'Delete' || e.key === 'Backspace') {
-        if (selectedIds.size > 0) {
-          return {
-            ...s,
-            circuit: {
-              ...circuit,
-              components: circuit.components.filter(c => !selectedIds.has(c.id)),
-              wires: circuit.wires.filter(w => {
-                // Remove wires connected to deleted components
-                const connected = circuit.components.some(c => 
-                  selectedIds.has(c.id) && (
-                    (c.type === 'Pin' && !c.attrs.output && (w.from.x === c.loc.x && w.from.y === c.loc.y || w.to.x === c.loc.x && w.to.y === c.loc.y)) ||
-                    (c.type !== 'Pin' && (w.from.x === c.loc.x && w.from.y === c.loc.y || w.to.x === c.loc.x && w.to.y === c.loc.y))
-                  )
-                );
-                return !connected;
-              }),
-            },
-            selectedIds: new Set(),
-          };
-        }
-      }
-
-      if (e.key === 'r' || e.key === 'R') {
-        if (selectedIds.size === 1) {
-          const comp = circuit.components.find(c => selectedIds.has(c.id));
-          if (comp) {
-            const facings: ('east'|'west'|'north'|'south')[] = ['east', 'south', 'west', 'north'];
-            const idx = facings.indexOf(comp.attrs.facing ?? 'east');
-            const nextFacing = facings[(idx + 1) % 4];
-            return {
-              ...s,
-              circuit: {
-                ...circuit,
-                components: circuit.components.map(c => 
-                  c.id === comp.id ? { ...c, attrs: { ...c.attrs, facing: nextFacing } } : c
-                ),
-              },
-            };
-          }
-        }
-      }
-
-      if (e.key === ' ' && tool !== 'wire') {
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (isTyping(e.target)) return;
+      const mod = e.ctrlKey || e.metaKey;
+      const key = e.key.toLowerCase();
+      if (mod && key === 'z') {
         e.preventDefault();
-        return { ...s, tool: 'poke' };
+        e.shiftKey ? store.redo() : store.undo();
+      } else if (mod && key === 'y') {
+        e.preventDefault();
+        store.redo();
+      } else if (mod) {
+        return;
+      } else if (e.key === 'Delete' || e.key === 'Backspace') {
+        e.preventDefault();
+        deleteSelection();
+      } else if (e.key === 'Escape') {
+        setTool(SELECT);
+        setSelection(NO_SELECTION);
+      } else if (key === 'r') rotateSelection();
+      else if (key === 'v') setTool(SELECT);
+      else if (key === 'p') setTool({ kind: 'poke' });
+      else if (key === 'w') setTool({ kind: 'wire' });
+      else if (e.key === ' ' && !e.repeat) {
+        e.preventDefault();
+        spaceReturn.current = tool;
+        setTool({ kind: 'poke' });
       }
-
-      return s;
-    });
-  }, []);
-
-  const handleKeyUp = useCallback((e: KeyboardEvent) => {
-    if (e.key === ' ') {
-      setState(s => ({ ...s, tool: 'select' }));
-    }
-  }, []);
-
-  useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
     };
-  }, [handleKeyDown, handleKeyUp]);
-
-  const handleTraceRequest = useCallback((compId: string, netId: string | null) => {
-    if (!simResult) return;
-    const trace = traceSignal(state.circuit, simResult, { compId, netId });
-    setState(s => ({ ...s, traceStages: trace.stages, showTrace: true }));
-  }, [simResult, traceSignal]);
-
-  const handleCoachRequest = useCallback((stages: TraceStage[]) => {
-    setState(s => ({ ...s, coachStages: stages, coachStageIndex: 0, showCoach: true }));
-  }, []);
-
-  const handleVerifyChallenge = useCallback(async () => {
-    if (!state.currentChallenge) return;
-    const result = verify(state.circuit, state.currentChallenge.inputNames, state.currentChallenge.outputNames, state.currentChallenge.expectedFn);
-    if (result.passed) {
-      alert('Challenge completed! 🎉');
-      // Share result
-      const url = new URL(window.location.href);
-      url.searchParams.set('solved', '1');
-      navigator.clipboard.writeText(url.toString());
-    } else {
-      alert(`Failed at row ${result.firstFailure?.rowIndex}: expected ${JSON.stringify(result.firstFailure?.expected)}, got ${JSON.stringify(result.firstFailure?.actual)}`);
-    }
-  }, [state.circuit, state.currentChallenge, verify]);
-
-  const handleNewCircuit = useCallback((presetSlug?: string) => {
-    if (presetSlug) {
-      const preset = PRESET_CIRCUITS.find(p => p.slug === presetSlug);
-      if (preset) {
-        setCircuit(preset.circuit);
-        setState(s => ({ ...s, selectedIds: new Set() }));
+    const up = (e: KeyboardEvent) => {
+      if (e.key === ' ' && spaceReturn.current) {
+        setTool(spaceReturn.current);
+        spaceReturn.current = null;
       }
-    } else {
-      setCircuit({ name: 'Untitled', components: [], wires: [] });
-      setState(s => ({ ...s, selectedIds: new Set() }));
-    }
-  }, [setCircuit]);
+    };
+    window.addEventListener('keydown', down);
+    window.addEventListener('keyup', up);
+    return () => {
+      window.removeEventListener('keydown', down);
+      window.removeEventListener('keyup', up);
+    };
+  }, [store, deleteSelection, rotateSelection, tool]);
 
-  const handleExportCirc = useCallback(() => {
-    const { serializeCircXml } = require('@logisim/core');
-    const xml = serializeCircXml(state.circuit);
-    const blob = new Blob([xml], { type: 'application/xml' });
-    const url = URL.createObjectURL(blob);
+  const exportCirc = () => {
+    const url = URL.createObjectURL(new Blob([serializeCircXml(circuit)], { type: 'application/xml' }));
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${state.circuit.name || 'circuit'}.circ`;
+    a.download = `${circuit.name.replace(/[^\w-]+/g, '_') || 'circuit'}.circ`;
     a.click();
     URL.revokeObjectURL(url);
-  }, [state.circuit]);
+  };
 
-  const handleImportCirc = useCallback((file: File) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const { parseCircXml } = require('@logisim/core');
-        const circuit = parseCircXml(e.target?.result as string);
-        setCircuit(circuit);
-      } catch (err) {
-        alert('Failed to import .circ file: ' + err);
-      }
-    };
-    reader.readAsText(file);
-  }, [setCircuit]);
+  const importCirc = async (file: File) => {
+    try {
+      const c = parseCircXml(await file.text());
+      setChallenge(null);
+      loadCircuit(c);
+      say(`Opened ${file.name}`);
+    } catch {
+      say('That file could not be read as a Logisim .circ file.');
+    }
+  };
 
-  const handleShareUrl = useCallback(() => {
-    const { encodeCircuitToUrl } = require('./file/UrlEncoder');
-    const url = encodeCircuitToUrl(state.circuit);
-    navigator.clipboard.writeText(url);
-    alert('Shareable URL copied to clipboard!');
-  }, [state.circuit]);
+  const share = async () => {
+    const url = encodeCircuitUrl(circuit);
+    try {
+      await navigator.clipboard.writeText(url);
+      say('Link copied. Anyone with it can open this circuit.');
+    } catch {
+      prompt('Copy this link:', url);
+    }
+  };
 
-  const panZoom = { x: state.pan.x, y: state.pan.y, k: state.zoom };
+  const selectedComp = selection.comps.size === 1 ? (circuit.components.find((c) => selection.comps.has(c.id)) ?? null) : null;
+  const conflict = Object.values(sim.netValues).some(hasErrorBit);
+  const status = sim.oscillating ? { cls: 'x', text: 'Oscillating' } : conflict ? { cls: 'e', text: 'Error signal (E)' } : { cls: '0', text: 'Stable' };
+  const highlight =
+    tab === 'challenge'
+      ? { components: new Set(challengeHl), nets: new Set<string>() }
+      : { components: new Set(inspectHl.components), nets: new Set(inspectHl.nets) };
+
+  const toolBtn = (kind: 'select' | 'poke' | 'wire', icon: IconName, label: string) => (
+    <button className={`tool${tool.kind === kind ? ' on' : ''}`} onClick={() => setTool(kind === 'select' ? SELECT : { kind })} aria-pressed={tool.kind === kind} title={label}>
+      <Icon name={icon} />
+      <span>{label}</span>
+    </button>
+  );
 
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      {/* Top Bar */}
-      <header style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        gap: 16,
-        padding: '8px 16px',
-        background: 'var(--card)',
-        borderBottom: '1px solid var(--line)',
-        flexWrap: 'wrap',
-        zIndex: 100,
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" style={{ flexShrink: 0 }}>
-            <rect width="32" height="32" rx="6" fill="var(--accent)"/>
-            <path d="M8 16L14 22L24 10" stroke="var(--card)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-          <span style={{ font: '500 1.25rem var(--font-display)', color: 'var(--fg)' }}>Logisim Revisited</span>
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-          <ToolPalette tool={state.tool} onToolChange={setTool} />
-          
-          <div style={{ display: 'flex', gap: 4 }}>
-            <button className="btn small" onClick={() => handleNewCircuit()} title="New Circuit (Ctrl+N)">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2V14M2 8H14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
-            </button>
-            <button className="btn small" onClick={handleExportCirc} title="Export .circ">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 12V4C4 3.44772 4.44772 3 5 3H11C11.5523 3 12 3.44772 12 4V12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M8 8V4M6 6L8 4L10 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-            </button>
-            <button className="btn small" onClick={() => document.getElementById('import-file')?.click()} title="Import .circ">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M12 4V12C12 12.5523 11.5523 13 11 13H5C4.44772 13 4 12.5523 4 12V4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M8 12V8M6 10L8 8L10 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-              <input id="import-file" type="file" accept=".circ,.xml" style={{ display: 'none' }} onChange={e => e.target.files?.[0] && handleImportCirc(e.target.files[0])} />
-            </button>
-            <button className="btn small" onClick={handleShareUrl} title="Share Circuit">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 8C4 5.79086 5.79086 4 8 4C10.2091 4 12 5.79086 12 8" stroke="currentColor" strokeWidth="1.5"/><path d="M12 8L16 12M12 8L16 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
-            </button>
-            <button className="btn small" onClick={() => stepClock(state.circuit, memState).then(r => { setCircuit(r.circuit); setSimResult(r.result); setMemState(r.result.memState); })} title="Clock Tick (Space)">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5"/><path d="M8 4V8L10 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
-            </button>
-            {state.currentChallenge && (
-              <button className="btn small" onClick={handleVerifyChallenge} title="Verify Solution">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 8L7 11L12 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-              </button>
-            )}
-            <button className="btn small alt" onClick={() => setState(s => ({ ...s, showSettings: true }))} title="Settings">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5"/><path d="M8 4V6M8 10V12M4 8H6M10 8H12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
-            </button>
-          </div>
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 12, color: 'var(--muted)', fontFamily: 'var(--font-mono)' }}>
-            {Math.round(state.zoom * 100)}%
-          </span>
-          {simResult && (
-            <>
-              <span className={`badge badge-${hasErrorBit(simResult) ? 'e' : simResult.oscillating ? 'x' : '0'}`}>
-                {simResult.oscillating ? 'OSC' : hasErrorBit(simResult) ? 'ERROR' : 'OK'}
-              </span>
-              <span style={{ fontSize: 11, color: 'var(--muted)', fontFamily: 'var(--font-mono)' }}>
-                {simResult.iterations} iter
-              </span>
-            </>
-          )}
-        </div>
+    <div className="app">
+      <header className="topbar">
+        <a className="brand" href="../" title="Logisim Revisited home">
+          <img src="icon.svg" alt="" width="28" height="28" />
+          <span className="wordmark">Logisim<small>Revisited</small></span>
+        </a>
+        <input className="circuit-name" value={circuit.name} onChange={(e) => replace({ ...circuit, name: e.target.value })} aria-label="Circuit name" maxLength={40} />
+        <span className="spacer" />
+        <button className="icon-btn" onClick={store.undo} disabled={!store.canUndo} title="Undo (Ctrl+Z)" aria-label="Undo"><Icon name="undo" /></button>
+        <button className="icon-btn" onClick={store.redo} disabled={!store.canRedo} title="Redo (Ctrl+Shift+Z)" aria-label="Redo"><Icon name="redo" /></button>
+        <span className="divider" />
+        <button className="icon-btn" onClick={() => setModal('presets')} title="Examples" aria-label="Examples"><Icon name="open" /></button>
+        <button className="icon-btn" onClick={() => importInput.current?.click()} title="Import .circ" aria-label="Import .circ"><Icon name="upload" /></button>
+        <button className="icon-btn" onClick={exportCirc} title="Export .circ" aria-label="Export .circ"><Icon name="download" /></button>
+        <button className="icon-btn" onClick={share} title="Copy share link" aria-label="Copy share link"><Icon name="share" /></button>
+        <input ref={importInput} type="file" accept=".circ,.xml" hidden onChange={(e) => { const f = e.target.files?.[0]; if (f) importCirc(f); e.target.value = ''; }} />
+        <button className="icon-btn" onClick={() => setModal('settings')} title="Settings" aria-label="Settings"><Icon name="gear" /></button>
       </header>
 
-      {/* Main Canvas Area */}
-      <main style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
-        <Canvas
-          circuit={state.circuit}
-          simResult={simResult}
-          selectedIds={state.selectedIds}
-          tool={state.tool}
-          wireStart={state.wireStart}
-          hoverNetId={state.hoverNetId}
-          panZoom={panZoom}
-          onCanvasClick={handleCanvasClick}
-          onPanZoomChange={(pan, zoom) => setState(s => ({ ...s, pan, zoom }))}
-          onHoverNetChange={netId => setState(s => ({ ...s, hoverNetId: netId }))}
-          onTraceRequest={handleTraceRequest}
-          onCoachRequest={handleCoachRequest}
-        />
-      </main>
+      <div className="body">
+        <aside className={`parts${partsOpen ? ' open' : ''}`} aria-label="Parts">
+          <div className="parts-head">
+            <h2>Parts</h2>
+            <button className="icon-btn only-mobile" onClick={() => setPartsOpen(false)} aria-label="Close parts"><Icon name="close" /></button>
+          </div>
+          <Palette tool={tool} onPick={pickPart} />
+        </aside>
 
-      {/* Bottom status bar */}
-      <footer style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '4px 16px',
-        background: 'var(--card)',
-        borderTop: '1px solid var(--line)',
-        fontSize: 12,
-        color: 'var(--muted)',
-        fontFamily: 'var(--font-mono)',
-      }}>
-        <span>{state.circuit.components.length} components, {state.circuit.wires.length} wires</span>
-        <span>{state.selectedIds.size} selected</span>
-        <span>Tool: {state.tool}</span>
-      </footer>
+        <main className="stage">
+          <Canvas
+            ref={canvas}
+            circuit={circuit}
+            sim={sim}
+            tool={tool}
+            selection={selection}
+            highlight={highlight}
+            showGrid={settings.showGrid}
+            showValues={settings.showValues}
+            commit={commit}
+            replace={replace}
+            checkpoint={checkpoint}
+            onSelect={setSelection}
+            onInspect={(t) => {
+              setTarget(t);
+              if (t) {
+                setTab('inspect');
+                setDrawerOpen(true);
+              }
+            }}
+          />
+          {circuit.components.length === 0 && circuit.wires.length === 0 && (
+            <div className="empty-stage">
+              <h2>Start a circuit</h2>
+              <p>Pick a part, click the canvas to place it, then use the wire tool to connect pins.</p>
+              <div className="row">
+                <button className="btn" onClick={() => setPartsOpen(true)}>Choose parts</button>
+                <button className="btn alt" onClick={() => setModal('presets')}>Open an example</button>
+              </div>
+            </div>
+          )}
+          <div className={`chip chip-${status.cls}`} role="status">{status.text}</div>
+          <div className="toolbar" role="toolbar" aria-label="Tools">
+            <button className="tool only-mobile" onClick={() => setPartsOpen(true)} title="Parts"><Icon name="parts" /><span>Parts</span></button>
+            {toolBtn('select', 'select', 'Select')}
+            {toolBtn('poke', 'poke', 'Poke')}
+            {toolBtn('wire', 'wire', 'Wire')}
+            <span className="divider" />
+            <button className="tool" onClick={rotateSelection} disabled={!selection.comps.size} title="Rotate (R)"><Icon name="rotate" /><span>Rotate</span></button>
+            <button className="tool" onClick={deleteSelection} disabled={!selection.comps.size && !selection.wires.size} title="Delete (Del)"><Icon name="trash" /><span>Delete</span></button>
+            <button className="tool" onClick={store.tick} title="Toggle every clock"><Icon name="tick" /><span>Tick</span></button>
+          </div>
+          <div className="zoom" role="group" aria-label="Zoom">
+            <button className="icon-btn" onClick={() => canvas.current?.zoomBy(1.25)} aria-label="Zoom in"><Icon name="plus" /></button>
+            <button className="icon-btn" onClick={() => canvas.current?.zoomBy(0.8)} aria-label="Zoom out"><Icon name="minus" /></button>
+            <button className="icon-btn" onClick={() => canvas.current?.fit()} aria-label="Fit to window"><Icon name="fit" /></button>
+          </div>
+          {tool.kind === 'place' && <div className="hint">Click to place {tool.item.name}. Esc to stop.</div>}
+          {tool.kind === 'wire' && <div className="hint">Drag between points, or click to chain. Double-click or Esc to finish.</div>}
+        </main>
 
-      {/* Sheets & Panels */}
-      {state.showSettings && (
-        <SettingsSheet
-          onClose={() => setState(s => ({ ...s, showSettings: false }))}
-          settings={settings}
-          onSettingsChange={setSettings}
-        />
+        <aside className={`drawer${drawerOpen ? ' open' : ''}`} aria-label="Panels">
+          <nav className="tabs" role="tablist">
+            {TABS.map((t) => (
+              <button
+                key={t.id}
+                role="tab"
+                aria-selected={tab === t.id}
+                className={tab === t.id ? 'on' : ''}
+                onClick={() => {
+                  setTab(t.id);
+                  setDrawerOpen(tab !== t.id || !drawerOpen);
+                }}
+              >
+                <Icon name={t.icon} size={18} />
+                <span>{t.label}</span>
+              </button>
+            ))}
+          </nav>
+          <div className="drawer-body scrollbar-thin" role="tabpanel">
+            {tab === 'inspect' && (
+              <Inspector circuit={circuit} sim={sim} target={target} selectedComp={selectedComp} commit={commit} onHighlight={setInspectHl} />
+            )}
+            {tab === 'analyze' && (
+              <AnalysisPanel
+                onBuild={(c) => {
+                  setChallenge(null);
+                  loadCircuit(c);
+                  setTab('inspect');
+                  say('Built a two-level AND-OR circuit. Poke the inputs to try it.');
+                }}
+              />
+            )}
+            {tab === 'challenge' && (
+              <ChallengePanel challenge={challenge} circuit={circuit} onStart={startChallenge} onExit={() => { setChallenge(null); loadCircuit(EMPTY_CIRCUIT); }} onHighlight={setChallengeHl} />
+            )}
+          </div>
+        </aside>
+      </div>
+
+      {modal === 'settings' && <SettingsSheet settings={settings} onChange={updateSettings} onClose={() => setModal(null)} />}
+      {modal === 'presets' && (
+        <Sheet title="Examples" onClose={() => setModal(null)}>
+          <div className="preset-list">
+            {PRESET_CIRCUITS.map((p) => (
+              <button
+                key={p.slug}
+                className="list-item"
+                onClick={() => {
+                  setChallenge(null);
+                  loadCircuit(p.circuit);
+                  setModal(null);
+                }}
+              >
+                <span>
+                  <strong>{p.name}</strong>
+                  <span className="muted small"> · {p.category} · {p.level}</span>
+                  <span className="muted small block">{p.summary}</span>
+                </span>
+                <Icon name="chevron" size={16} />
+              </button>
+            ))}
+          </div>
+        </Sheet>
       )}
-
-      {state.showCoach && state.coachStages.length > 0 && (
-        <CoachPanel
-          stages={state.coachStages}
-          currentIndex={state.coachStageIndex}
-          onStageChange={idx => setState(s => ({ ...s, coachStageIndex: idx }))}
-          onClose={() => setState(s => ({ ...s, showCoach: false }))}
-          onNext={() => setState(s => ({ ...s, coachStageIndex: Math.min(s.coachStageIndex + 1, s.coachStages.length - 1) }))}
-          onPrev={() => setState(s => ({ ...s, coachStageIndex: Math.max(s.coachStageIndex - 1, 0) }))}
-        />
-      )}
-
-      {state.showTrace && state.traceStages.length > 0 && (
-        <TracePanel
-          stages={state.traceStages}
-          onClose={() => setState(s => ({ ...s, showTrace: false }))}
-        />
-      )}
-
-      {state.showChallenge && state.currentChallenge && (
-        <DailyChallenge
-          challenge={state.currentChallenge}
-          onClose={() => setState(s => ({ ...s, showChallenge: false, currentChallenge: null }))}
-          onVerify={handleVerifyChallenge}
-        />
-      )}
+      {toast && <div className="toast" role="status">{toast}</div>}
     </div>
   );
 }
 
-// Helper functions
-function findPinAt(circuit: Circuit, simResult: SimulationResult | null, x: number, y: number) {
-  for (const comp of circuit.components) {
-    const pins = require('@logisim/core').getComponentPins(comp);
-    for (const pin of pins) {
-      if (pin.x === x && pin.y === y) {
-        return { compId: comp.id, pinId: pin.id, x: pin.x, y: pin.y, dir: pin.dir, width: pin.width };
-      }
-    }
-  }
-  return null;
-}
-
-function findComponentAt(circuit: Circuit, x: number, y: number) {
-  // Check if click is near component center (within 30px)
-  for (const comp of circuit.components) {
-    const dx = comp.loc.x - x;
-    const dy = comp.loc.y - y;
-    if (dx * dx + dy * dy <= 900) { // 30px radius
-      return comp;
-    }
-  }
-  return null;
-}
-
-function hasErrorBit(sim: SimulationResult): boolean {
-  return Object.values(sim.netValues).some(v => 
-    require('@logisim/core').hasErrorBit(v)
-  );
-}
+export default App;

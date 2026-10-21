@@ -1,82 +1,62 @@
-import { describe, it, expect } from 'vitest';
-import { build } from '../src/build.mjs';
-import { type } from 'node:type';
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-describe('@logisim/website build', () => {
-  it('should build all pages without errors', async () => {
-    // This test verifies the build script runs successfully
-    // In CI, it builds the site and asserts on the output
-    expect(true).toBe(true);
-  });
+// Run `pnpm --filter @logisim/website build` first; this test asserts on dist/.
+const dist = join(dirname(fileURLToPath(import.meta.url)), '..', 'dist');
 
-  it('should generate HTML with proper structure', () => {
-    // Verify the build outputs pages with correct HTML structure
-    const pages = [
-      'index.html',
-      'about.html',
-      'privacy.html',
-      '404.html',
-    ];
+function htmlFiles(dir) {
+  const out = [];
+  for (const name of readdirSync(dir)) {
+    const p = join(dir, name);
+    if (statSync(p).isDirectory()) {
+      if (name !== 'play') out.push(...htmlFiles(p));
+    } else if (name.endsWith('.html')) out.push(p);
+  }
+  return out;
+}
 
-    for (const page of pages) {
-      // Read the built file and check it has proper HTML structure
-      const html = readFileSync(`dist/${page}`, 'utf8');
-      expect(html).toMatch(/<!doctype html>/i);
-      expect(html).toMatch(/<html /i);
-      expect(html).toMatch(/<head>/i);
-      expect(html).toMatch(/<body>/i);
+test('dist exists with the core pages', () => {
+  assert.ok(existsSync(dist), 'dist/ missing: run the website build first');
+  for (const page of ['index.html', 'about.html', 'privacy.html', '404.html']) {
+    assert.ok(existsSync(join(dist, page)), `${page} missing`);
+  }
+});
+
+test('every page has basic HTML structure', () => {
+  for (const file of htmlFiles(dist)) {
+    const html = readFileSync(file, 'utf8');
+    assert.match(html, /<!doctype html>/i, file);
+    assert.match(html, /<html[ >]/i, file);
+    assert.match(html, /<head>/i, file);
+    assert.match(html, /<body[ >]/i, file);
+  }
+});
+
+test('no British spellings', () => {
+  const british = /\b(colour|behaviour|centre|realise|organise|analyse|catalogue|grey)\w*/i;
+  for (const file of htmlFiles(dist)) {
+    const text = readFileSync(file, 'utf8').replace(/<script[\s\S]*?<\/script>/gi, '');
+    const m = text.match(british);
+    assert.equal(m, null, `${file}: ${m && m[0]}`);
+  }
+});
+
+test('internal links resolve', () => {
+  const broken = [];
+  for (const file of htmlFiles(dist)) {
+    const html = readFileSync(file, 'utf8');
+    for (const [, href] of html.matchAll(/<a\s[^>]*href="([^"]+)"/gi)) {
+      if (/^(https?:|mailto:|tel:|#|javascript:)/i.test(href)) continue;
+      const clean = href.split('#')[0].split('?')[0];
+      if (!clean) continue;
+      let target = clean.startsWith('/') ? join(dist, clean) : resolve(dirname(file), clean);
+      if (target.startsWith(join(dist, 'play'))) continue; // the app is a separate build
+      if (existsSync(target) && statSync(target).isDirectory()) target = join(target, 'index.html');
+      if (!existsSync(target)) broken.push(`${file.slice(dist.length)} -> ${href}`);
     }
-  });
-
-  it('should not contain British spellings', () => {
-    // Read all built pages and check for British spellings
-    const fs = require('node:fs');
-    const path = require('node:path');
-    const distDir = path.join('dist');
-
-    function walkDir(dir) {
-      const results = [];
-      const list = fs.readdirSync(dir);
-      for (const file of list) {
-        const filePath = path.join(dir, file);
-        const stat = fs.statSync(filePath);
-        if (stat && stat.isDirectory()) {
-          results.push(...walkDir(filePath));
-        } else if (file.endsWith('.html')) {
-          const content = fs.readFileSync(filePath, 'utf8');
-          results.push(content);
-        }
-      }
-      return results;
-    }
-
-    const allHtml = walkDir(distDir);
-    const britishPatterns = [
-      /colour/i,
-      /behaviour/i,
-      /center/i, // US: center, UK: centre (but center could be either)
-      /realise/i,
-      /organise/i,
-      /analyse/i,
-      /catalogue/i,
-    ];
-
-    for (const html of allHtml) {
-      for (const pattern of britishPatterns) {
-        // Only flag if it's clearly British (not a variable name or US usage)
-        if (pattern.test(html)) {
-          // Allow 'center' as it's valid in both, but flag colour/behaviour/organise/analyse/catalogue
-          if (
-            /colour/.test(html) ||
-            /behaviour/.test(html) ||
-            /organise/.test(html) ||
-            /analyse/.test(html) ||
-            /catalogue/.test(html)
-          ) {
-            console.warn(`British spelling found in ${filePath}: ${pattern}`);
-          }
-        }
-      }
-    }
-  });
+  }
+  assert.deepEqual(broken, []);
 });
