@@ -51,8 +51,9 @@ test('internal links resolve', () => {
     for (const [, href] of html.matchAll(/<a\s[^>]*href="([^"]+)"/gi)) {
       if (/^(https?:|mailto:|tel:|#|javascript:)/i.test(href)) continue;
       const clean = href.split('#')[0].split('?')[0];
-      if (!clean || clean.startsWith('/play')) continue;
+      if (!clean) continue;
       let target = clean.startsWith('/') ? join(dist, clean) : resolve(dirname(file), clean);
+      if (target.startsWith(join(dist, 'play'))) continue; // the app is a separate build
       if (existsSync(target) && statSync(target).isDirectory()) target = join(target, 'index.html');
       if (!existsSync(target)) broken.push(`${file.slice(dist.length)} -> ${href}`);
     }

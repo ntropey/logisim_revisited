@@ -1,14 +1,9 @@
 /*
  * Logisim Revisited. GPL-3.0-or-later; see LICENSE.
- * Component reference pages for the website.
- * Zero dependencies; works with build.mjs.
+ * Component catalog for the reference pages: every component type implemented in @logisim/core.
  */
 
-/**
- * Component catalog - all 32 component types from @logisim/core.
- * Each entry includes description, pinout, and reference data.
- */
-const COMPONENTS = [
+export const COMPONENTS = [
   { type: 'Pin', category: 'Wiring', shortName: 'Input Pin', desc: 'Interactive input source; toggles with Poke tool. Has output variant (output Pin reads wire signal).', pins: 'in0/out0, width 1' },
   { type: 'Probe', category: 'Wiring', shortName: 'Output Pin / Probe', desc: 'Displays the live logic state of a wire or bus.', pins: 'in0, width 1' },
   { type: 'Tunnel', category: 'Wiring', shortName: 'Tunnel', desc: 'Connects wires with the same label across the schematic without visible crossing wires.', pins: 'pin0, width 1, label' },
@@ -51,100 +46,3 @@ const COMPONENTS = [
   { type: 'Counter', category: 'Memory', shortName: 'Counter', desc: 'Increments its N-bit value on each rising Clock edge.', pins: 'clk, rst, out0 Q, out1 ovf, width 4' },
   { type: 'ROM', category: 'Memory', shortName: 'ROM', desc: 'Read-Only Memory lookup table indexed by an address bus.', pins: 'addr, out0 D, width 4, selectBits 4, value 0,1,2,3,4,5,6,7,8,9,A,B,C,D,E,F' },
 ];
-
-/**
- * Build a component reference page HTML.
- * Returns the HTML string.
- */
-function buildComponentPage(siteUrl, type) {
-  const comp = COMPONENTS.find((c) => c.type === type);
-  if (!comp) return null;
-
-  const body = `<article class="content guide">
-<h1>${comp.shortName}</h1>
-<p class="meta">${comp.type}</p>
-<p>${comp.desc}</p>
-<p><strong>Category:</strong> ${comp.category}</p>
-<p><strong>Pins:</strong> ${comp.pins}</p>
-<p><strong>Default attributes:</strong> ${JSON.stringify(comp.defaultAttrs || {})}</p>
-</article>`;
-
-  const rail = (current) => `<aside class="rail"><label class="railselect"><span>Component</span><select onchange="location.href=this.value" aria-label="Jump to a component">
-${COMPONENTS.map((c) => `<option value="${c.type}"${c.type === current ? ' selected' : ''}>${c.shortName}</option>`).join('')}
-</select></label>
-<nav class="railnav" aria-label="Components"><h2><a href="#">Components</a></h2>
-<ul>${COMPONENTS.map((c) => `<li><a href="#${c.type}">${c.shortName}</a></li>`).join('')}</ul></nav>
-</aside>`;
-
-  return page({
-    title: `${comp.shortName} | Logisim Revisited Components`,
-    description: `${comp.shortName}: ${comp.desc}`,
-    root: '../',
-    path: `components/${type}.html`,
-    wide: true,
-    jsonld: {
-      '@context': 'https://schema.org',
-      '@type': 'TechArticle',
-      headline: `${comp.shortName}`,
-      description: comp.desc,
-      url: `${siteUrl}components/${type}.html`,
-      author: { '@type': 'Organization', name: 'Logisim Revisited', url: siteUrl },
-    },
-    body: `<div class="with-rail">${rail(type)}
-${body}</div>`,
-  });
-}
-
-/**
- * Build the Components index page HTML.
- * Returns the HTML string.
- */
-function buildComponentsIndexHtml(siteUrl) {
-  const rail = (current) => `<aside class="rail"><label class="railselect"><span>Component</span><select onchange="location.href=this.value" aria-label="Jump to a component">
-${COMPONENTS.map((c) => `<option value="${c.type}"${c.type === current ? ' selected' : ''}>${c.shortName}</option>`).join('')}
-</select></label>
-<nav class="railnav" aria-label="Components"><h2><a href="#">Components</a></h2>
-<ul>${COMPONENTS.map((c) => `<li><a href="components/${c.type}.html">${c.shortName}</a></li>`).join('')}</ul></nav>
-</aside>`;
-
-  const body = `<div class="with-rail">${rail(null)}
-<div class="content">
-<h1>Component Reference Library</h1>
-<p class="lead">Reference for all 32 component types in Logisim Revisited.</p>
-<div class="tgrid">
-${COMPONENTS.map((c) => `<a class="tcard" href="components/${c.type}.html"><span class="band lv-${c.category === 'Gates' ? 'medium' : c.category === 'Arithmetic' ? 'hard' : c.category === 'Memory' ? 'medium' : 'easy'}">${c.shortName}</span><strong>${c.type}</strong><span>${c.category}</span></a>`).join('\n')}
-</div>
-</div></div>`;
-
-  return page({
-    title: 'Components | Logisim Revisited',
-    description: 'Reference for all component types in Logisim Revisited',
-    root: '../',
-    path: 'components/',
-    wide: true,
-    jsonld: {
-      '@context': 'https://schema.org',
-      '@type': 'CollectionPage',
-      name: 'Component reference library',
-      url: `${siteUrl}components/`,
-      description: 'Reference for all 32 component types in Logisim Revisited: Wiring, Gates, Plexers, Arithmetic, and Memory',
-      mainEntity: {
-        '@type': 'ItemList',
-        numberOfItems: COMPONENTS.length,
-        itemListElement: COMPONENTS.map((c, idx) => ({
-          '@type': 'ListItem',
-          position: idx + 1,
-          name: c.shortName,
-          url: `${siteUrl}components/${c.type}.html`,
-        })),
-      },
-    },
-    body,
-  });
-}
-
-/**
- * Export all page builders.
- */
-export const components = COMPONENTS;
-export { buildComponentPage, buildComponentsIndexHtml };

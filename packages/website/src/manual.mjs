@@ -1,146 +1,94 @@
 /*
  * Logisim Revisited. GPL-3.0-or-later; see LICENSE.
- * Manual pages generator for the website.
- * Zero dependencies; works with build.mjs.
+ * Manual chapters. Bodies are trusted HTML written here.
  */
 
-/**
- * Manual page catalog - user guide chapters.
- */
-const MANUAL_PAGES = [
+export const MANUAL = [
   {
     slug: 'introduction',
     title: 'Introduction',
-    summary: 'Getting started with Logisim Revisited: installation, first circuit, and basic operation.',
+    summary: 'Getting started: your first circuit and the basic tools.',
+    body: `
+<p>Open <a href="../play/">the app</a> in any modern browser. Nothing to install: it runs on your device, on desktop or phone.</p>
+<h2>Your first circuit</h2>
+<ol>
+<li>Pick a gate from the component palette and click the canvas to place it.</li>
+<li>Place two input pins and an output pin.</li>
+<li>Choose the <strong>Wire</strong> tool and drag from one pin to another.</li>
+<li>Switch to the <strong>Poke</strong> tool and click an input to toggle it. Wires update immediately.</li>
+</ol>
+<h2>Wire colors</h2>
+<p>Green is 0, red is 1, blue is Z (floating), and a red error mark means E (a conflict). The same colors are used on every guide on this site.</p>`,
   },
   {
     slug: 'circuits',
     title: 'Circuit Library',
-    summary: 'Browse the built-in circuit library, import .circ files, and manage your circuit collection.',
+    summary: 'Built-in example circuits and your own saved work.',
+    body: `
+<p>The library contains the circuits from the <a href="../circuits/">circuit guides</a>: adders, a 4-bit ALU, a multiplexer, flip-flops, a counter with a hex display, a majority voter, and a deliberate short circuit for practicing diagnosis.</p>
+<p>Choose a circuit to load it onto the canvas. Your own circuits are saved in your browser, on your device only, and can be exported as <span class="mono">.circ</span> files at any time.</p>`,
   },
   {
     slug: 'ai-coach',
     title: 'AI Circuit Coach',
-    summary: '4-stage Socratic coach for debugging broken circuits, learning Karnaugh map minimization, and Boolean algebra simplification.',
+    summary: 'Four-stage nudges and the "why is this wire 0, 1, E or Z?" prover.',
+    body: `
+<p>The coach is symbolic, not a chatbot: it reasons from the circuit itself, so its explanations are exact and work offline.</p>
+<h2>Coach me</h2>
+<p>When a circuit does not give the expected output, choose <strong>Coach me</strong>. The coach reveals help in four stages, so you can stop as soon as you have the idea:</p>
+<ol><li><strong>Where to look</strong></li><li><strong>The pattern</strong></li><li><strong>The logic</strong></li><li><strong>Conclusion</strong></li></ol>
+<h2>Why is this wire 0, 1, E or Z?</h2>
+<p>Select a pin, gate or wire and ask why it has its value. The prover walks backward from that point through the drivers that determine it. For a red E, it names the competing drivers; for a blue Z, it shows that nothing is driving the net.</p>`,
   },
   {
     slug: 'k-map',
     title: 'Karnaugh Map Minimization',
-    summary: 'Truth table entry, K-Map visualization, Quine-McCluskey minimization, and automatic gate circuit synthesis.',
+    summary: 'Truth tables, K-maps, Quine-McCluskey and one-click synthesis.',
+    body: `
+<p>Open the <strong>Analysis</strong> tab, then enter a Boolean expression or fill in a truth table for up to four variables.</p>
+<ul>
+<li>The <strong>K-map</strong> view uses Gray-code ordering and draws each prime-implicant loop.</li>
+<li>The minimizer reports a minimal sum of products and product of sums, using Quine-McCluskey.</li>
+<li><strong>Synthesize</strong> builds a two-level AND-OR circuit from the result and places it on the canvas.</li>
+</ul>
+<p>New to K-maps? Start with the <a href="../learn/k-map-tutorial.html">tutorial</a>.</p>`,
   },
   {
     slug: 'import-export',
     title: 'Import/Export .circ Files',
-    summary: 'Import classic .circ files from Logisim 2.7.1 and export your circuits for use in the original program.',
+    summary: 'Exchange circuits with Logisim 2.7.1.',
+    body: `
+<p><strong>Import</strong> reads the XML <span class="mono">.circ</span> format written by Logisim 2.7.1. <strong>Export</strong> writes the same format so you can open your work in the original program.</p>
+<p>Wiring, Gates, Plexers, Arithmetic, Memory and Input/Output components are supported. Anything else in a file is kept out of the simulation. Everything happens in your browser; files are never uploaded.</p>`,
   },
   {
     slug: 'settings',
     title: 'Settings',
-    summary: 'Grid snap, dark mode, wire color themes, auto-simulate, and privacy preferences.',
+    summary: 'Grid, theme and privacy preferences.',
+    body: `
+<p>Open <strong>Settings</strong> from the toolbar. You can change the color theme (light, dark or follow the system), grid snapping, and automatic simulation. Privacy and advertising choices are in the same panel and can be changed whenever you like.</p>`,
   },
   {
     slug: 'daily-challenges',
     title: 'Daily Logic Challenges',
-    summary: 'Date-seeded daily challenges with shareable results, coach integration, and solution verification.',
+    summary: 'A new puzzle every day, seeded by the date.',
+    body: `
+<p>Each day has a design or troubleshooting puzzle chosen from the date, so everyone gets the same one. Build or repair the circuit; the app checks it against the target truth table and reports the first row that fails. When you solve it you get a shareable result card.</p>
+<p>The coach is available during a challenge. Start with a nudge before asking for the answer.</p>`,
   },
   {
     slug: 'offline',
-    title: 'Offline & PWA',
-    summary: 'Install as a Progressive Web App for offline use. Service worker caches assets for offline access.',
+    title: 'Offline and Install',
+    summary: 'Use the app without a connection.',
+    body: `
+<p>Logisim Revisited is a progressive web app. Use your browser's <strong>Install</strong> or <strong>Add to Home Screen</strong> option and it will open like a native app and keep working without a connection, because the simulator runs on your device.</p>`,
   },
   {
     slug: 'privacy',
     title: 'Privacy and Ads',
-    summary: 'How circuits and settings are stored in your browser\'s localStorage. Advertising consent and Google Consent Mode v2.',
+    summary: 'What is stored, and how advertising consent works.',
+    body: `
+<p>Your circuits and settings are stored in your browser's local storage, on your device. The simulator and coach run on your device and send nothing to a server.</p>
+<p>This website may show ads. Ad scripts load only after you consent, and the consent banner follows Google Consent Mode v2. You can change your choice at any time from the link in the banner or the app's Settings. Details are on the <a href="../privacy.html">privacy page</a>.</p>`,
   },
 ];
-
-/**
- * Build a manual page HTML.
- * Returns the HTML string.
- */
-function buildManualPage(siteUrl, chapter) {
-  const { slug, title, summary } = chapter;
-  const body = `<article class="content guide">
-<h1>${title}</h1>
-<p class="lead">${summary}</p>
-<p>Chapter content would be written here, describing the feature in detail with examples and screenshots.</p>
-</article>`;
-
-  const rail = (current) => `<aside class="rail"><label class="railselect"><span>Chapter</span><select onchange="location.href=this.value" aria-label="Jump to a chapter">
-${MANUAL_PAGES.map((p) => `<option value="${p.slug}.html"${p.slug === current ? ' selected' : ''}>${p.title}</option>`).join('')}
-</select></label>
-<nav class="railnav" aria-label="Manual"><h2><a href="./">Manual</a></h2><ul class="flat">${MANUAL_PAGES.map((p) => `<li><a href="${p.slug}.html">${p.title}</a></li>`).join('')}</ul></nav>
-</aside>`;
-
-  return page({
-    title: `${title} | Logisim Revisited Manual`,
-    description: `${title}: user guide chapter`,
-    root: '../',
-    path: `${slug}.html`,
-    wide: true,
-    jsonld: {
-      '@context': 'https://schema.org',
-      '@type': 'Article',
-      headline: title,
-      description: summary,
-      url: `${siteUrl}${slug}.html`,
-      author: { '@type': 'Organization', name: 'Logisim Revisited', url: siteUrl },
-    },
-    body: `<div class="with-rail">${rail(slug)}
-${body}</div>`,
-  });
-}
-
-/**
- * Build the Manual index page HTML.
- * Returns the HTML string.
- */
-function buildManualIndexHtml(siteUrl) {
-  const rail = (current) => `<aside class="rail"><label class="railselect"><span>Chapter</span><select onchange="location.href=this.value" aria-label="Jump to a chapter">
-${MANUAL_PAGES.map((p) => `<option value="${p.slug}.html"${p.slug === current ? ' selected' : ''}>${p.title}</option>`).join('')}
-</select></label>
-<nav class="railnav" aria-label="Manual"><h2><a href="./">Manual</a></h2><ul class="flat">${MANUAL_PAGES.map((p) => `<li><a href="${p.slug}.html">${p.title}</a></li>`).join('')}</ul></nav>
-</aside>`;
-
-  const body = `<div class="with-rail">${rail(null)}
-<div class="content">
-<h1>Manual: Logisim Revisited</h1>
-<p class="lead">User manual for the digital logic simulator, one chapter at a time.</p>
-<div class="tgrid">
-${MANUAL_PAGES.map((p, i) => `<a class="tcard" href="${p.slug}.html"><span class="band">${String(i + 1).padStart(2, '0')}</span><strong>${p.title}</strong><span>${p.summary}</span></a>`).join('\n')}
-</div>
-</div></div>`;
-
-  return page({
-    title: 'Manual | Logisim Revisited',
-    description: 'User manual for the digital logic simulator',
-    root: '../',
-    path: 'manual/',
-    wide: true,
-    jsonld: {
-      '@context': 'https://schema.org',
-      '@type': 'CollectionPage',
-      name: 'Manual: Logisim Revisited',
-      url: `${siteUrl}manual/`,
-      description: 'User manual for Logisim Revisited: circuits, AI Coach, K-Map minimization, import/export, settings, offline, and privacy',
-      mainEntity: {
-        '@type': 'ItemList',
-        numberOfItems: MANUAL_PAGES.length,
-        itemListElement: MANUAL_PAGES.map((p, idx) => ({
-          '@type': 'ListItem',
-          position: idx + 1,
-          name: p.title,
-          url: `${siteUrl}${p.slug}.html`,
-        })),
-      },
-    },
-    body,
-  });
-}
-
-/**
- * Export all page builders.
- */
-export const MANUAL = MANUAL_PAGES;
-export { buildManualPage, buildManualIndexHtml };
