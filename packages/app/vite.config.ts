@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
+  base: './',
   plugins: [react()],
   resolve: {
     alias: {
@@ -13,8 +14,6 @@ export default defineConfig({
     },
   },
   build: {
-    target: 'ES2022',
-    minify: 'esbuild',
     sourcemap: true,
     rollupOptions: {
       output: {
@@ -28,7 +27,7 @@ export default defineConfig({
   },
   server: {
     port: 5173,
-    open: true,
+    open: false,
   },
   worker: {
     format: 'es',
