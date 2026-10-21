@@ -18,9 +18,10 @@ export default defineConfig({
     sourcemap: true,
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          core: ['@logisim/core'],
+        manualChunks(id: string) {
+          if (id.includes('node_modules/react')) return 'vendor';
+          if (id.includes('packages/core')) return 'core';
+          return undefined;
         },
       },
     },
