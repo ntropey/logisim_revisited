@@ -1,0 +1,18 @@
+{
+  "name": "@logisim/core",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Logisim Revisited engine: 4-state logic simulator, component libraries, Karnaugh map analyzer, and .circ XML parser (pure TypeScript, no DOM/Node APIs)",
+  "license": "GPL-3.0-or-later",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "vitest": "^5.0.5"
+  }
+}

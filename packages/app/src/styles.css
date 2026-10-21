@@ -1,0 +1,146 @@
+/*
+ * Logisim Revisited. GPL-3.0-or-later; see LICENSE.
+ * Design tokens shared with @logisim/website.
+ */
+
+@font-face {
+  font-family: 'Newsreader';
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url('/fonts/newsreader-latin-400-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Newsreader';
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+  src: url('/fonts/newsreader-latin-500-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url('/fonts/ibm-plex-sans-latin-400-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+  src: url('/fonts/ibm-plex-sans-latin-500-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  src: url('/fonts/ibm-plex-sans-latin-600-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url('/fonts/ibm-plex-mono-latin-400-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  src: url('/fonts/ibm-plex-mono-latin-600-normal.woff2') format('woff2');
+}
+
+:root {
+  --bg: #F5F2EA;
+  --card: #FFFDF8;
+  --fg: #1C1B18;
+  --muted: #55524A;
+  --line: #D9D3C5;
+  --thick: #1C1B18;
+  --accent: #2B4EA2;
+  --surface-2: #EAE5D8;
+  --accent-soft: #E3E8F5;
+  --tint-a: #EEF2FB;
+  --tint-b: #FBF3E2;
+  --key: #2B4EA2;
+  --c0: #C9D6F4;
+  --c1: #F3E3C0;
+  --fin: #6B3FA0;
+  --elim: #A8321F;
+  --elim-bg: #F6D3CA;
+  --place: #2E7D4F;
+  --place-bg: #D5EBDC;
+  --wire-0: #2E7D4F;
+  --wire-1: #A8321F;
+  --wire-z: #2B4EA2;
+  --wire-e: #A8321F;
+  --wire-x: #6B3FA0;
+  --font-display: 'Newsreader', Georgia, serif;
+  --font-ui: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #15171B;
+    --card: #1D2026;
+    --fg: #ECE8DF;
+    --muted: #A9A498;
+    --line: #3A3E47;
+    --thick: #ECE8DF;
+    --accent: #9DB4F5;
+    --surface-2: #252932;
+    --accent-soft: #22384F;
+    --tint-a: #232A3A;
+    --tint-b: #2E2A1E;
+    --key: #9DB4F5;
+    --c0: #2C3D66;
+    --c1: #4A3A1C;
+    --fin: #C9A6F0;
+    --elim: #FF9A85;
+    --elim-bg: #5A2A22;
+    --place: #7FD39B;
+    --place-bg: #22402C;
+    --wire-0: #7FD39B;
+    --wire-1: #FF9A85;
+    --wire-z: #9DB4F5;
+    --wire-e: #FF9A85;
+    --wire-x: #C9A6F0;
+  }
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; height: 100%; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 400 16px/1.6 var(--font-ui); height: 100%; overflow: hidden; }
+#root { height: 100%; display: flex; flex-direction: column; }
+a { color: var(--accent); }
+code, kbd, .mono { font-family: var(--font-mono); font-size: 0.88em; }
+kbd { padding: 1px 6px; border: 1px solid var(--line); border-radius: 3px; background: var(--card); }
+code { background: var(--surface-2); padding: 1px 5px; border-radius: 3px; overflow-wrap: anywhere; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 20px; border-radius: 6px; background: var(--accent); color: var(--card); text-decoration: none; font-weight: 500; font-family: var(--font-ui); font-size: 14px; border: 1px solid var(--accent); cursor: pointer; transition: filter 0.15s; }
+.btn:hover { filter: brightness(1.1); }
+.btn.alt { background: transparent; color: var(--accent); }
+.btn.small { padding: 6px 14px; font-size: 13px; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn.icon-only { padding: 8px; }
+.input { font: inherit; padding: 8px 12px; border: 1px solid var(--line); border-radius: 6px; background: var(--card); color: var(--fg); min-height: 44px; }
+.input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
+.select { font: inherit; padding: 8px 12px; border: 1px solid var(--line); border-radius: 6px; background: var(--card); color: var(--fg); min-height: 44px; cursor: pointer; }
+.label { display: block; font-size: 13px; font-weight: 500; color: var(--muted); margin-bottom: 4px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
+.badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 99px; font: 600 11px/1 var(--font-mono); letter-spacing: 0.05em; text-transform: uppercase; }
+.badge-0 { background: var(--place-bg); color: var(--place); }
+.badge-1 { background: var(--elim-bg); color: var(--elim); }
+.badge-z { background: var(--tint-a); color: var(--wire-z); }
+.badge-e { background: var(--elim-bg); color: var(--elim); }
+.badge-x { background: var(--tint-b); color: var(--fin); }
+.tooltip { position: absolute; z-index: 1000; background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 8px 12px; font-size: 13px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); pointer-events: none; white-space: nowrap; }
+.scrollbar-thin::-webkit-scrollbar { width: 8px; height: 8px; }
+.scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+.scrollbar-thin::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
+.scrollbar-thin::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
