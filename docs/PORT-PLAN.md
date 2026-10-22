@@ -24,10 +24,11 @@ Last updated 2026-10-22.
 
 3. **`@logisim/website`**: circuit guides, component pages and the home page draw real schematics with the app's renderer, and combinational guides show a truth table produced by the simulator. One page shell (`layout.mjs`), relative links derived from each page's path, a real stylesheet built on the app's tokens, 70 pages (home, circuits, learn, manual, components, about, privacy, 404), consent-aware AdSense, sitemap and robots when `SITE_URL` is set, and a test that checks structure, spelling and internal links.
 
+4. **End-to-end tests** (`packages/app/e2e`, 21 Playwright tests, desktop and phone): presets and URLs, poke/undo/redo, persistence, Tick, building and wiring by hand, moving with wires attached, keyboard rotate/delete, inspector edits, Coach hints, the E prover, K-map to circuit, solving a challenge, .circ export/import, share links, offline service worker, and the phone layout. They run in CI.
+
 ## Next
 
 - **App polish**: keyboard navigation on the canvas, marquee selection, copy/paste, bus value badges on wires, a first-run tour, touch long-press for Delete.
-- **App tests**: end-to-end tests (Playwright is installed in CI images) for place/wire/poke; component tests for the panels.
 - **Content**: an interactive (pokeable) schematic on guide pages; a true cross-coupled S-R latch guide (first check how the simulator settles latch feedback from power-on).
 - **Core gaps**: RAM, Logisim sub-circuits and appearance, and libraries beyond the six shipped (Base, TTL) are not supported; the importer ignores them.
 - **Domain**: the custom domain is attached but GitHub has not issued an HTTPS certificate; see the notes on re-triggering the DNS check in the repository settings.

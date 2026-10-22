@@ -24,7 +24,7 @@ export function PrimEl({ p }: { p: Prim }) {
     case 'rect':
       return <rect x={p.x} y={p.y} width={p.w} height={p.h} rx={p.rx} className={p.cls} stroke={p.stroke} fill={p.fill} strokeWidth={p.sw} />;
     case 'circle':
-      return <circle cx={p.cx} cy={p.cy} r={p.r} className={p.cls} stroke={p.stroke} fill={p.fill} />;
+      return <circle cx={p.cx} cy={p.cy} r={p.r} className={p.cls} stroke={p.stroke} fill={p.fill} data-pin={p.pin} />;
     case 'line':
       return <line x1={p.x1} y1={p.y1} x2={p.x2} y2={p.y2} className={p.cls} stroke={p.stroke} strokeWidth={p.sw} strokeDasharray={p.dash} />;
     case 'text':

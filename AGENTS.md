@@ -39,6 +39,7 @@ pnpm typecheck                                    # tsc across packages; node --
 pnpm test                                         # every package
 pnpm --filter @logisim/core test
 pnpm --filter @logisim/app test
+pnpm --filter @logisim/app e2e                    # Playwright: builds the app, serves it, drives Chromium (desktop + phone)
 pnpm --filter @logisim/app dev                    # dev server
 pnpm --filter @logisim/app build                  # tsc + vite build -> packages/app/dist
 pnpm --filter @logisim/website build              # site, including the app -> packages/website/dist
@@ -48,7 +49,9 @@ pnpm --filter @logisim/website test               # builds the site, then assert
 `SITE_URL=https://logisimrevisited.com/` is set in CI for the website build (it writes `sitemap.xml`
 and `robots.txt`).
 
-Before finishing a change, run `pnpm typecheck` and `pnpm test`, and the affected package's `build`.
+Before finishing a change, run `pnpm typecheck` and `pnpm test`, and the affected package's `build`. For app
+changes also run `pnpm --filter @logisim/app e2e`; specs live in `packages/app/e2e/*.e2e.ts` (named so Vitest
+ignores them). Locally Playwright uses the preinstalled Chromium; CI installs it.
 
 ## Architecture notes
 
