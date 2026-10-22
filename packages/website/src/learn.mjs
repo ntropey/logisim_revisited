@@ -25,7 +25,7 @@ export const LEARN = [
 <p>When the output depends only on the current inputs, the circuit is <em>combinational</em>. Adders, multiplexers and decoders are all combinational. You can describe any of them with a truth table and, from that, a Boolean expression. See the <a href="k-map-tutorial.html">Karnaugh map tutorial</a> for how to make the expression small.</p>
 <h2>Sequential circuits</h2>
 <p>Feed a gate's output back to its own input and the circuit can <em>remember</em>. Two cross-coupled NOR gates make an S-R latch; add a clock and you get a flip-flop that only changes on a clock edge. Registers, counters and memories are built from flip-flops.</p>
-<p>Try it: open the <a href="../circuits/sr-latch.html">flip-flop circuit guide</a> or <a href="../play/">the app</a>, click an input pin with the Poke tool, and watch the wires change color.</p>`,
+<p>Try it: open the <a href="../circuits/jk-flip-flop.html">flip-flop circuit guide</a> or <a href="../play/">the app</a>, click an input pin with the Poke tool, and watch the wires change color.</p>`,
   },
   {
     slug: 'k-map-tutorial',

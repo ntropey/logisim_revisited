@@ -1,6 +1,6 @@
 # Port Plan & Status
 
-Last updated 2026-10-21.
+Last updated 2026-10-22.
 
 ## Done
 
@@ -22,12 +22,12 @@ Last updated 2026-10-21.
    - `.circ` import/export, share-by-URL (`#c=`), `?p=`, `?challenge=`, `?daily=` deep links, light/dark/system theme, local autosave, offline service worker.
    - Simulation runs on the main thread. The core is synchronous and fast at schematic sizes, which removed the old worker's request-matching and `eval` problems.
 
-3. **`@logisim/website`**: one page shell (`layout.mjs`), relative links derived from each page's path, a real stylesheet built on the app's tokens, 70 pages (home, circuits, learn, manual, components, about, privacy, 404), consent-aware AdSense, sitemap and robots when `SITE_URL` is set, and a test that checks structure, spelling and internal links.
+3. **`@logisim/website`**: circuit guides, component pages and the home page draw real schematics with the app's renderer, and combinational guides show a truth table produced by the simulator. One page shell (`layout.mjs`), relative links derived from each page's path, a real stylesheet built on the app's tokens, 70 pages (home, circuits, learn, manual, components, about, privacy, 404), consent-aware AdSense, sitemap and robots when `SITE_URL` is set, and a test that checks structure, spelling and internal links.
 
 ## Next
 
 - **App polish**: keyboard navigation on the canvas, marquee selection, copy/paste, bus value badges on wires, a first-run tour, touch long-press for Delete.
 - **App tests**: end-to-end tests (Playwright is installed in CI images) for place/wire/poke; component tests for the panels.
-- **Content**: circuit guide pages show text only; add rendered schematics from the preset circuits (needs a shared SVG renderer between app and website). The S-R latch guide text describes a J-K flip-flop and needs rewriting.
+- **Content**: an interactive (pokeable) schematic on guide pages; a true cross-coupled S-R latch guide (first check how the simulator settles latch feedback from power-on).
 - **Core gaps**: RAM, Logisim sub-circuits and appearance, and libraries beyond the six shipped (Base, TTL) are not supported; the importer ignores them.
 - **Domain**: the custom domain is attached but GitHub has not issued an HTTPS certificate; see the notes on re-triggering the DNS check in the repository settings.

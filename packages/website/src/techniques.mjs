@@ -74,19 +74,20 @@ const TECHNIQUES = [
   },
 
   {
-    slug: 'sr-latch',
-    name: 'S-R Latch',
+    slug: 'jk-flip-flop',
+    name: 'J-K Flip-Flop',
     level: 'Medium',
-    summary: 'Demonstrates clocked sequential state storage and toggling using a J-K Flip-Flop driven by J, K, and a Clock source.',
+    summary: 'Stores one bit and changes it only on a rising clock edge: J sets, K resets, and J = K = 1 toggles.',
     category: 'Sequential',
     body: [
-      'Sequential circuits use clocked flip-flops to store state.',
-      'A J-K Flip-Flop toggles when J=K=1 on the rising clock edge.',
-      'S-R Flip-Flop: S=1 sets Q=1, R=1 resets Q=0 on clock edge.',
-      'Key concept: state changes only on active clock edges.',
+      'A flip-flop is a one-bit memory. Unlike a gate, its output depends on what happened before, not only on its inputs right now.',
+      'The J-K flip-flop looks at J and K only at the rising edge of the clock, the moment CLK goes from 0 to 1. In between, Q holds its value no matter how J and K change.',
+      'At a rising edge: J = 0, K = 0 keeps Q; J = 1, K = 0 sets Q to 1; J = 0, K = 1 resets Q to 0; J = 1, K = 1 toggles Q. The NotQ output is always the opposite of Q.',
+      'In this circuit J and K both start at 1. Each Tick toggles the clock, so every second Tick is a rising edge and flips Q. Poke J or K to 0 and tick twice more to see reset, set and hold.',
+      'An S-R flip-flop works the same way with S and R in place of J and K, except that S = R = 1 is not allowed.',
     ],
-    tip: 'If Q toggles unexpectedly, check for glitches on the clock line.',
-    example: 'sr-latch',
+    tip: 'Q only changes on the 0 to 1 edge. If a Tick does nothing, the clock just went from 1 back to 0; press Tick again.',
+    example: 'jk-flip-flop',
   },
 
   {
