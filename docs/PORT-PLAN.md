@@ -29,6 +29,11 @@ Last updated 2026-10-22.
 ## Next
 
 - **App polish**: keyboard navigation on the canvas, marquee selection, copy/paste, bus value badges on wires, a first-run tour, touch long-press for Delete.
+- **UI/UX roadmap (ui-ux-pro-max audit)**:
+  - Mobile touch-hold context menu for component actions and deletion.
+  - Interactive audio feedback on clock tick, poke transitions, and challenge success.
+  - Canvas mini-map widget for large-scale schematics.
+  - Accessible high-contrast wire pattern options in Settings (building on dashed E conflict and dotted Z floating lines).
 - **Content**: an interactive (pokeable) schematic on guide pages; a true cross-coupled S-R latch guide (first check how the simulator settles latch feedback from power-on).
 - **Core gaps**: RAM, Logisim sub-circuits and appearance, and libraries beyond the six shipped (Base, TTL) are not supported; the importer ignores them.
 - **Domain**: the custom domain is attached but GitHub has not issued an HTTPS certificate; see the notes on re-triggering the DNS check in the repository settings.

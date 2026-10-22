@@ -311,11 +311,31 @@ export function App() {
         </main>
 
         <aside className={`drawer${drawerOpen ? ' open' : ''}`} aria-label="Panels">
-          <nav className="tabs" role="tablist">
+          <nav
+            className="tabs"
+            role="tablist"
+            aria-label="Panels"
+            onKeyDown={(e) => {
+              const idx = TABS.findIndex((t) => t.id === tab);
+              if (idx === -1) return;
+              if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                e.preventDefault();
+                const next = TABS[(idx + 1) % TABS.length].id;
+                setTab(next);
+                setDrawerOpen(true);
+              } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                e.preventDefault();
+                const prev = TABS[(idx - 1 + TABS.length) % TABS.length].id;
+                setTab(prev);
+                setDrawerOpen(true);
+              }
+            }}
+          >
             {TABS.map((t) => (
               <button
                 key={t.id}
                 role="tab"
+                tabIndex={tab === t.id ? 0 : -1}
                 aria-selected={tab === t.id}
                 className={tab === t.id ? 'on' : ''}
                 onClick={() => {
