@@ -245,12 +245,12 @@ export const PRESET_CIRCUITS: readonly PresetCircuit[] = [
     },
   },
   {
-    slug: 'sr-latch',
-    name: 'S-R & J-K Flip-Flop Memory Stage',
+    slug: 'jk-flip-flop',
+    name: 'J-K Flip-Flop',
     category: 'Sequential',
     level: 'Medium',
     score: 260,
-    summary: 'Demonstrates clocked sequential state storage and toggling using a J-K Flip-Flop driven by J, K, and a Clock source.',
+    summary: 'Stores one bit and changes it only on a rising clock edge: J sets, K resets, and J = K = 1 toggles.',
     circuit: {
       name: 'J-K Flip-Flop',
       components: [

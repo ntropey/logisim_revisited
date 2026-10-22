@@ -6,6 +6,7 @@ import { readFileSync } from 'node:fs';
 
 const appCss = readFileSync(new URL('../../app/src/styles.css', import.meta.url), 'utf8');
 const TOKENS = appCss.slice(appCss.indexOf(':root'), appCss.indexOf('* { box-sizing'));
+const SCHEMATIC = readFileSync(new URL('../../app/src/render/schematic.css', import.meta.url), 'utf8');
 
 const FACES = [
   ['Newsreader', 400, 'newsreader'],
@@ -124,7 +125,24 @@ table.ref th { font-weight: 600; width: 9em; color: var(--muted); }
 .legend .e, .legend .elim { background: var(--elim-bg); color: var(--elim); }
 .legend .z { background: var(--tint-a); color: var(--wire-z); }
 
+figure.circuit { margin: 0; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 18px; }
+figure.circuit .schematic { display: block; margin: 0 auto; }
+figure.circuit figcaption { margin-top: 12px; font-size: .85rem; color: var(--muted); }
+figure.circuit p { margin: 12px 0 0; }
+figure.part { max-width: 360px; margin: 1.2em 0; }
+figure.part .schematic { width: 100%; height: auto; max-height: 220px; }
+.figure-col { display: grid; gap: 20px; align-content: start; position: sticky; top: 76px; }
+table.truth { width: 100%; border-collapse: collapse; font: .9rem var(--font-mono); background: var(--card); border: 1px solid var(--line); }
+table.truth caption { caption-side: top; text-align: left; font: .85rem var(--font-ui); color: var(--muted); padding: 0 0 8px; }
+table.truth th, table.truth td { padding: 6px 14px; text-align: center; border-bottom: 1px solid var(--line); }
+table.truth th { background: var(--surface-2); font-weight: 600; }
+table.truth .out { border-left: 1px solid var(--line); }
+table.truth td.v1 { color: var(--wire-1); font-weight: 600; }
+table.truth td.v0 { color: var(--wire-0); }
+table.truth td.vE { color: var(--wire-e); background: var(--elim-bg); font-weight: 600; }
+
 @media (max-width: 860px) {
+  .figure-col { position: static; }
   .hero, .spotlight, .guide-cols { grid-template-columns: 1fr; }
   .with-rail { grid-template-columns: 1fr; gap: 20px; }
   .rail { position: static; }
@@ -138,4 +156,4 @@ table.ref th { font-weight: 600; width: 9em; color: var(--muted); }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; } }
 `;
 
-export const SITE_CSS = `/* Logisim Revisited site styles. GPL-3.0-or-later. */\n${FACES}\n${TOKENS}\n${LAYOUT}`;
+export const SITE_CSS = `/* Logisim Revisited site styles. GPL-3.0-or-later. */\n${FACES}\n${TOKENS}\n${LAYOUT}\n${SCHEMATIC}`;

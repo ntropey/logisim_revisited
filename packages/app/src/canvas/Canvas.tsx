@@ -4,8 +4,9 @@
  */
 import { forwardRef, useCallback, useImperativeHandle, useLayoutEffect, useRef, useState } from 'react';
 import { getComponentPins, isPointOnWire, pokeComponent, pointKey, type Circuit, type ComponentInstance, type Point, type SimulationResult, type Wire } from '@logisim/core';
+import { junctionPoints } from '../render/schematic';
 import { Glyph, valueColor } from './Glyph';
-import { distToSegment, hitComponent, hitPin, snap, worldBounds } from './geometry';
+import { distToSegment, hitComponent, hitPin, snap, worldBounds } from '../render/geometry';
 import { makeComponent, uid, type Tool } from './tools';
 
 export interface Selection {
@@ -308,15 +309,7 @@ export const Canvas = forwardRef<CanvasHandle, Props>(function Canvas(props, ref
   const ghost = tool.kind === 'place' && cursor ? makeComponent(tool.item, cursor, circuit) : null;
   const gridK = view.k >= 0.8 ? 10 : 50;
 
-  // Junction dots where three or more wire ends meet, or an end meets the middle of another wire.
-  const junctions = new Map<string, Point>();
-  for (const w of circuit.wires) {
-    for (const p of [w.from, w.to]) {
-      const others = circuit.wires.filter((o) => o !== w && isPointOnWire(p, o));
-      const interior = others.some((o) => !((o.from.x === p.x && o.from.y === p.y) || (o.to.x === p.x && o.to.y === p.y)));
-      if (others.length >= 2 || interior) junctions.set(pointKey(p), p);
-    }
-  }
+  const junctions = junctionPoints(circuit);
 
   return (
     <svg
@@ -367,7 +360,7 @@ export const Canvas = forwardRef<CanvasHandle, Props>(function Canvas(props, ref
             </g>
           );
         })}
-        {[...junctions.values()].map((p) => (
+        {junctions.map((p) => (
           <circle key={pointKey(p)} cx={p.x} cy={p.y} r={4} fill={valueColor(sim.netValues[netAt(p) ?? ''])} />
         ))}
         {circuit.components.map((c) => (

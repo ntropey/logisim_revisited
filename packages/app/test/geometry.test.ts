@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getComponentPins, type ComponentInstance } from '@logisim/core';
-import { hitComponent, hitPin, rotate, snap, worldBounds } from '../src/canvas/geometry';
+import { hitComponent, hitPin, rotate, snap, worldBounds } from '../src/render/geometry';
 
 const and = (facing: ComponentInstance['attrs']['facing'] = 'east'): ComponentInstance => ({
   id: 'g',

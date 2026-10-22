@@ -60,3 +60,33 @@ test('internal links resolve', () => {
   }
   assert.deepEqual(broken, []);
 });
+
+test('every circuit guide and component page has a rendered schematic', () => {
+  for (const dir of ['circuits', 'components']) {
+    for (const name of readdirSync(join(dist, dir))) {
+      if (name === 'index.html' || name === 'sr-latch.html') continue;
+      const html = readFileSync(join(dist, dir, name), 'utf8');
+      assert.match(html, /<svg class="schematic" viewBox="[-\d.]+ [-\d.]+ [\d.]+ [\d.]+"/, `${dir}/${name}`);
+    }
+  }
+});
+
+test('combinational guides show a simulated truth table with the right answers', () => {
+  const html = readFileSync(join(dist, 'circuits', 'half-adder.html'), 'utf8');
+  const rows = [...html.matchAll(/<tr><td>(\d)<\/td><td>(\d)<\/td><td class="out v\w">(\w)<\/td><td class="out v\w">(\w)<\/td><\/tr>/g)].map((m) => m.slice(1).join(''));
+  assert.deepEqual(rows, ['0000', '0110', '1010', '1101']); // A B Sum Carry
+  assert.match(readFileSync(join(dist, 'circuits', 'short-circuit-demo.html'), 'utf8'), /class="out vE">E</);
+  assert.doesNotMatch(readFileSync(join(dist, 'circuits', 'jk-flip-flop.html'), 'utf8'), /<table class="truth"/);
+});
+
+test('the renamed flip-flop guide keeps its old address', () => {
+  const html = readFileSync(join(dist, 'circuits', 'sr-latch.html'), 'utf8');
+  assert.match(html, /http-equiv="refresh" content="0; url=jk-flip-flop.html"/);
+});
+
+test('no template leaks such as undefined, null or NaN in page text', () => {
+  for (const file of htmlFiles(dist)) {
+    const text = readFileSync(file, 'utf8').replace(/<script[\s\S]*?<\/script>/gi, '').replace(/<[^>]+>/g, ' ');
+    assert.doesNotMatch(text, /\b(undefined|null|NaN)\b/, file);
+  }
+});

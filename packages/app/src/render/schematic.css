@@ -1,0 +1,14 @@
+/*
+ * Logisim Revisited. GPL-3.0-or-later; see LICENSE.
+ * Schematic styles shared by the app canvas and the website (render/schematic.ts emits these classes).
+ */
+.glyph-body { fill: var(--card); stroke-width: 2; stroke-linejoin: round; }
+.glyph-line { fill: none; stroke-width: 2; stroke-linecap: round; }
+.glyph-title { font: 600 10px var(--font-ui); fill: var(--fg); pointer-events: none; }
+.glyph-value { font: 600 11px var(--font-mono); fill: var(--fg); pointer-events: none; }
+.glyph-big { font: 600 26px var(--font-mono); fill: var(--fg); pointer-events: none; }
+.glyph-label { font: 500 11px var(--font-ui); fill: var(--muted); pointer-events: none; }
+.glyph-pin { font: 500 8.5px var(--font-mono); fill: var(--muted); pointer-events: none; }
+.pin-dot { stroke: var(--card); stroke-width: 1; pointer-events: none; }
+.wire { stroke-linecap: round; pointer-events: none; transition: stroke .1s; }
+.schematic { max-width: 100%; height: auto; overflow: visible; }

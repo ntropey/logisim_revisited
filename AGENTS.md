@@ -13,7 +13,8 @@ Licensed **GPL-3.0-or-later**.
 
 ## Repository layout
 
-pnpm workspace, Node >= 20 (CI and the site build use Node 22), TypeScript, ESM throughout.
+pnpm workspace, Node >= 22.18 (the site build imports TypeScript sources with Node's built-in type
+stripping), TypeScript, ESM throughout.
 
 - `packages/core` — the engine. Pure TypeScript: **no DOM, no Node APIs.** 4-state multi-bit logic values,
   component libraries (Wiring, Gates, Plexers, Arithmetic, Memory, Input/Output), discrete-event circuit
@@ -58,6 +59,11 @@ Before finishing a change, run `pnpm typecheck` and `pnpm test`, and the affecte
   `layout.mjs` (links are relative to the page, derived from its path) and writes `site.css` from `styles.mjs`,
   which reuses the app's design tokens. Scripts are inlined, e.g. `gate.mjs`, `consent.mjs`.
   `/play/` is the app's own Vite build copied verbatim.
+- **One schematic renderer.** `packages/app/src/render/schematic.ts` (pure TS, no DOM or React) turns circuits
+  into shape descriptions. The app canvas maps them to React elements; the site serializes them to SVG text
+  for circuit guides, component pages and the home page, with styles from `render/schematic.css`. The site
+  loads these `.ts` files through `website/src/register-ts.mjs`, so they must stay erasable TypeScript: no
+  enums, namespaces or parameter properties, and type-only imports marked `type`.
 - **Ads load only after consent.** `consent.mjs` adds Google Consent Mode v2 and the consent banner to
   every site page; the AdSense script is injected only after consent.
 - **Coding conventions.** TypeScript `strict` (see `tsconfig.base.json`). Prefer named exports.

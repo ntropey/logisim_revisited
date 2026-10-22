@@ -90,7 +90,8 @@ export function App() {
   useEffect(() => {
     const q = new URLSearchParams(location.search);
     const shared = decodeCircuitHash(location.hash);
-    const preset = PRESET_CIRCUITS.find((p) => p.slug === q.get('p'));
+    const slug = q.get('p') === 'sr-latch' ? 'jk-flip-flop' : q.get('p'); // renamed; old links keep working
+    const preset = PRESET_CIRCUITS.find((p) => p.slug === slug);
     const daily = q.get('daily');
     const picked = LOGIC_CHALLENGES.find((c) => c.id === q.get('challenge'));
     if (shared) loadCircuit(shared);

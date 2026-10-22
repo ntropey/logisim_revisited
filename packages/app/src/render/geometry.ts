@@ -32,9 +32,17 @@ export function localPins(comp: ComponentInstance): PinDef[] {
 }
 
 /** Body rectangle in the east-facing local frame. */
+/** Width of the value box for pins, probes and constants: wide enough for a bus value such as 0xFF. */
+export function valueBoxWidth(comp: ComponentInstance): number {
+  const w = comp.attrs.width ?? 1;
+  if (w <= 1 || !['Pin', 'Probe', 'Constant'].includes(comp.type)) return 20;
+  const chars = 2 + Math.ceil(w / 4); // '0x' and one hex digit per nibble
+  return Math.ceil((chars * 7 + 8) / 10) * 10;
+}
+
 export function localBody(comp: ComponentInstance): Rect {
   const t = comp.type;
-  if (SINGLE_PIN.has(t)) return { x0: -20, y0: -10, x1: 0, y1: 10 };
+  if (SINGLE_PIN.has(t)) return { x0: -valueBoxWidth(comp), y0: -10, x1: 0, y1: 10 };
   if (GATES.has(t)) {
     const n = Math.max(2, comp.attrs.inputs ?? 2);
     const h = Math.max(20, Math.ceil(n / 2) * 10 + 10);
@@ -47,7 +55,7 @@ export function localBody(comp: ComponentInstance): Rect {
   const xs = pins.map((p) => p.x);
   const ys = pins.map((p) => p.y);
   const x1 = Math.max(...xs, 0);
-  const x0 = Math.min(Math.min(...xs), x1 - 30);
+  const x0 = Math.min(Math.min(...xs), x1 - 40);
   return { x0, y0: Math.min(...ys) - 10, x1, y1: Math.max(...ys) + 10 };
 }
 

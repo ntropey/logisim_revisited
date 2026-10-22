@@ -15,6 +15,7 @@ import { MANUAL } from './manual.mjs';
 import { COMPONENTS } from './components.mjs';
 import { TECHNIQUES } from './techniques.mjs';
 import { FONT_FILES, SITE_CSS } from './styles.mjs';
+import { circuitSchematic, componentSchematic, simulatedTruthTable } from './schematics.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const out = join(here, '..', 'dist');
@@ -25,7 +26,7 @@ const siteUrl = (process.env.SITE_URL ?? '').replace(/\/?$/, '/');
 const GROUPS = [
   ['Arithmetic', ['half-adder', 'full-adder', '4-bit-alu']],
   ['Plexers', ['multiplexer']],
-  ['Sequential', ['sr-latch']],
+  ['Sequential', ['jk-flip-flop']],
   ['Combinational', ['k-map-solver', 'short-circuit-demo']],
   ['Displays', ['7-segment-decoder']],
 ].map(([name, slugs], i) => ({
@@ -106,13 +107,16 @@ ${next ? `<a href="${href(next)}"><small>Next</small>${esc(next.title)} →</a>`
 }
 
 // ---- home
-const HALF_ADDER_SVG = `<svg viewBox="0 0 360 220" role="img" aria-label="A half adder: an XOR gate produces Sum and an AND gate produces Carry" fill="none" stroke="var(--fg)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-<g stroke="var(--wire-1)"><path d="M24 52h78M52 52v90h44"/><path d="M180 70h100"/></g>
-<g stroke="var(--wire-0)"><path d="M24 178h72M72 178V88h30"/><path d="M166 160h114"/></g>
-<path d="M84 40q20 30 0 60"/><path d="M96 40C140 40 165 55 180 70C165 85 140 100 96 100q20-30 0-60z" fill="var(--card)"/>
-<path d="M96 130h40a30 30 0 0 1 0 60H96z" fill="var(--card)"/>
-<g stroke="none" fill="var(--muted)" font-family="IBM Plex Mono, monospace" font-size="13"><text x="2" y="47">A</text><text x="2" y="173">B</text><text x="288" y="75">Sum</text><text x="288" y="165">Carry</text><text x="110" y="75" fill="var(--fg)">XOR</text><text x="104" y="165" fill="var(--fg)">AND</text></g>
-</svg>`;
+const LEGEND = '<div class="legend"><span class="lg place">0</span><span class="lg e">1</span><span class="lg z">Z floating</span><span class="lg elim">E conflict (dashed)</span></div>';
+
+/** Simulated truth table as HTML, or '' for circuits that do not have one. */
+function truthTableHtml(slug) {
+  const t = simulatedTruthTable(slug);
+  if (!t) return '';
+  return `<table class="truth"><caption>Every input combination, run through the simulator</caption><thead><tr>${t.inputs.map((n) => `<th>${esc(n)}</th>`).join('')}${t.outputs.map((n) => `<th class="out">${esc(n)}</th>`).join('')}</tr></thead><tbody>${t.rows
+    .map((r) => `<tr>${r.inputs.map((b) => `<td>${b}</td>`).join('')}${r.outputs.map((v) => `<td class="out v${esc(v)}">${esc(v)}</td>`).join('')}</tr>`)
+    .join('')}</tbody></table>`;
+}
 
 add('index.html', {
   wide: true,
@@ -135,7 +139,7 @@ add('index.html', {
     <p class="lead">A free digital logic simulator with the engine, AI Coach, K-map analyzer and .circ import and export rebuilt in TypeScript. No Java. Ask why any pin or wire is 0, 1, E (red) or Z (blue), or get step-by-step nudges.</p>
     <div class="actions"><a class="btn" href="play/">Open the simulator</a> <a class="btn alt" href="play/?daily=1">Daily challenge</a> <a class="btn alt" href="circuits/">Browse circuits</a></div>
   </div>
-  <figure class="gatecard">${HALF_ADDER_SVG}<figcaption>A half adder. Sum is A XOR B; Carry is A AND B.</figcaption></figure>
+  <figure class="gatecard">${circuitSchematic('half-adder')}<figcaption>A half adder with A = 1 and B = 1, drawn by the simulator: Sum is A XOR B, Carry is A AND B.</figcaption></figure>
 </section>
 <section class="spotlight">
   <div>
@@ -201,11 +205,18 @@ ORDERED.forEach((t, i) => {
 <h1>${esc(t.name)}</h1>
 <p class="meta"><span class="band lv-${t.level.toLowerCase()}">${esc(t.level)}</span></p>
 <p class="lead">${esc(t.summary)}</p>
+<div class="guide-cols">
 <div class="prose">
 ${t.body.map((p) => `<p>${esc(p)}</p>`).join('\n')}
 ${t.tip ? `<p class="tip"><strong>Tip:</strong> ${esc(t.tip)}</p>` : ''}
+</div>
+<div class="figure-col">
+<figure class="circuit">${circuitSchematic(t.example)}
+<figcaption>As it opens in the app, with live wire colors.${LEGEND}</figcaption>
 <p><a class="btn" href="../play/?p=${esc(t.example)}">Open in the app</a></p>
-<div class="legend"><span class="lg place">0 green</span><span class="lg e">1 red / E error</span><span class="lg z">Z blue</span></div>
+</figure>
+${truthTableHtml(t.example)}
+</div>
 </div>
 <nav class="pager">
 ${prev ? `<a href="${prev.slug}.html"><small>Previous</small>← ${esc(prev.name)}</a>` : '<span></span>'}
@@ -276,6 +287,7 @@ COMP_ITEMS.forEach((c) => {
 <p class="crumbs"><a href="./">Components</a> / ${esc(c.category)}</p>
 <h1>${esc(c.shortName)}</h1>
 <p class="lead">${esc(c.desc)}</p>
+<figure class="circuit part">${componentSchematic(c.type)}<figcaption>Default settings, facing east. Pins are the dots.</figcaption></figure>
 <table class="ref">
 <tr><th>Library</th><td>${esc(c.category)}</td></tr>
 <tr><th>Type name</th><td><span class="mono">${esc(c.type)}</span></td></tr>
@@ -286,6 +298,24 @@ COMP_ITEMS.forEach((c) => {
 </div>`,
   });
 });
+
+// The J-K guide was published briefly as circuits/sr-latch.html; keep that address working.
+pages.push([
+  'circuits/sr-latch.html',
+  `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>J-K Flip-Flop | Logisim Revisited</title>
+<meta name="robots" content="noindex">
+<link rel="canonical" href="${abs('circuits/jk-flip-flop.html')}">
+<meta http-equiv="refresh" content="0; url=jk-flip-flop.html">
+</head>
+<body>
+<p>This guide moved to <a href="jk-flip-flop.html">J-K Flip-Flop</a>.</p>
+</body>
+</html>`,
+]);
 
 // ---- about, privacy, 404
 add('about.html', {
@@ -350,7 +380,7 @@ writeFileSync(join(out, 'ads.txt'), `google.com, pub-${ADSENSE_CLIENT.replace('c
 
 const gated = Boolean(process.env.SITE_PASSWORD);
 if (!gated && siteUrl !== '/') {
-  const urls = pages.map(([p]) => p).filter((p) => p !== '404.html').map((p) => siteUrl + p.replace(/index\.html$/, ''));
+  const urls = pages.map(([p]) => p).filter((p) => p !== '404.html' && p !== 'circuits/sr-latch.html').map((p) => siteUrl + p.replace(/index\.html$/, ''));
   if (existsSync(appDist)) urls.push(siteUrl + 'play/');
   writeFileSync(
     join(out, 'sitemap.xml'),

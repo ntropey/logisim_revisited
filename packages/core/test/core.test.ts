@@ -76,7 +76,7 @@ describe('@logisim/core preset circuits & discrete-event simulator', () => {
   });
 
   it('steps sequential J-K Flip-Flop and 4-bit Counter on rising clock edges', () => {
-    const jkPreset = PRESET_CIRCUITS.find((p) => p.slug === 'sr-latch')!;
+    const jkPreset = PRESET_CIRCUITS.find((p) => p.slug === 'jk-flip-flop')!;
     let cir = jkPreset.circuit;
     let mem = createEmptyMemoryState();
     const sim0 = simulateCircuit(cir, mem);
