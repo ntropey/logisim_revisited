@@ -286,7 +286,7 @@ table.pins td { padding: 3px 4px; border-bottom: 1px solid var(--line); }
 @media (max-width: 1100px) { .body { grid-template-columns: 200px minmax(0, 1fr) 320px; } }
 @media (max-width: 860px) {
   body { font-size: 14px; }
-  .body { grid-template-columns: 1fr; position: relative; }
+  .body { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) auto; position: relative; }
   .only-mobile { display: inline-grid !important; }
   .tool.only-mobile { display: flex !important; }
   .spacer { display: none; }
@@ -296,11 +296,11 @@ table.pins td { padding: 3px 4px; border-bottom: 1px solid var(--line); }
   .topbar .icon-btn[aria-label="Redo"], .topbar .divider { display: none; }
   .parts { position: fixed; inset: 0 30% 0 0; z-index: 60; transform: translateX(-102%); transition: transform .2s; box-shadow: 8px 0 30px rgba(0,0,0,.25); }
   .parts.open { transform: none; }
-  .drawer { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; border-left: 0; border-top: 1px solid var(--line); border-radius: 16px 16px 0 0; box-shadow: 0 -8px 30px rgba(0,0,0,.18); max-height: 58vh; }
+  .drawer { border-left: 0; border-top: 1px solid var(--line); border-radius: 16px 16px 0 0; box-shadow: 0 -8px 30px rgba(0,0,0,.12); position: relative; z-index: 40; }
   .drawer:not(.open) .drawer-body { display: none; }
-  .drawer.open { height: 58vh; }
-  .toolbar { bottom: 64px; }
-  .hint { bottom: 134px; }
+  .drawer.open { height: 46vh; }
+  .toolbar { bottom: 12px; }
+  .hint { bottom: 76px; }
   .tool { min-width: 44px; padding: 6px 4px; }
   .toast { bottom: 120px; }
   .scrim { align-items: end; padding: 0; }

@@ -105,6 +105,13 @@ export function App() {
     return () => cancelAnimationFrame(id);
   }, [loadVersion]);
 
+  // On phones the drawer shares the screen with the canvas, so re-fit when it opens or closes.
+  useEffect(() => {
+    if (!window.matchMedia('(max-width: 860px)').matches) return;
+    const id = requestAnimationFrame(() => canvas.current?.fit());
+    return () => cancelAnimationFrame(id);
+  }, [drawerOpen]);
+
   const pickPart = (item: PaletteItem) => {
     setTool({ kind: 'place', item });
     setSelection(NO_SELECTION);
