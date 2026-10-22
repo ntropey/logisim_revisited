@@ -355,7 +355,7 @@ export const Canvas = forwardRef<CanvasHandle, Props>(function Canvas(props, ref
                 className={`wire${sim.oscillatingNets.includes(net) ? ' oscillating' : ''}`}
                 stroke={wireColor(w)}
                 strokeWidth={wide ? 4.5 : 2.5}
-                strokeDasharray={sim.netValues[net]?.bits.includes('E') ? '6 3' : undefined}
+                strokeDasharray={sim.netValues[net]?.bits.includes('E') ? '6 3' : sim.netValues[net]?.bits.every((b) => b === 'Z') ? '3 3' : undefined}
               />
             </g>
           );
