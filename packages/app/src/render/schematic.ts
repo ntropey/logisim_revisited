@@ -25,7 +25,7 @@ import { center, facingOf, isGate, isInverting, localBody, ROTATION, worldBounds
 export type Prim =
   | { k: 'path'; d: string; cls?: string; stroke?: string; fill?: string; sw?: number; dash?: string }
   | { k: 'rect'; x: number; y: number; w: number; h: number; rx?: number; cls?: string; stroke?: string; fill?: string; sw?: number }
-  | { k: 'circle'; cx: number; cy: number; r: number; cls?: string; stroke?: string; fill?: string }
+  | { k: 'circle'; cx: number; cy: number; r: number; cls?: string; stroke?: string; fill?: string; pin?: string }
   | { k: 'line'; x1: number; y1: number; x2: number; y2: number; cls?: string; stroke?: string; sw?: number; dash?: string }
   | { k: 'text'; x: number; y: number; text: string; cls: string; anchor?: 'start' | 'middle' | 'end'; central?: boolean }
   | { k: 'g'; transform: string; children: Prim[] };
@@ -187,7 +187,7 @@ export function componentPrims(comp: ComponentInstance, sim: SimulationResult, o
       });
     }
   }
-  for (const p of pins) out.push({ k: 'circle', cx: p.x, cy: p.y, r: 3.5, cls: 'pin-dot', fill: valueColor(pv[p.id]) });
+  for (const p of pins) out.push({ k: 'circle', cx: p.x, cy: p.y, r: 3.5, cls: 'pin-dot', fill: valueColor(pv[p.id]), pin: `${comp.id}:${p.id}` });
   return out;
 }
 
@@ -273,7 +273,7 @@ export function primToSvg(p: Prim): string {
     case 'rect':
       return `<rect x="${p.x}" y="${p.y}" width="${p.w}" height="${p.h}"${a('rx', p.rx)}${a('class', p.cls)}${a('stroke', p.stroke)}${a('fill', p.fill)}${a('stroke-width', p.sw)}/>`;
     case 'circle':
-      return `<circle cx="${p.cx}" cy="${p.cy}" r="${p.r}"${a('class', p.cls)}${a('stroke', p.stroke)}${a('fill', p.fill)}/>`;
+      return `<circle cx="${p.cx}" cy="${p.cy}" r="${p.r}"${a('class', p.cls)}${a('stroke', p.stroke)}${a('fill', p.fill)}${a('data-pin', p.pin)}/>`;
     case 'line':
       return `<line x1="${p.x1}" y1="${p.y1}" x2="${p.x2}" y2="${p.y2}"${a('class', p.cls)}${a('stroke', p.stroke)}${a('stroke-width', p.sw)}${a('stroke-dasharray', p.dash)}/>`;
     case 'text':

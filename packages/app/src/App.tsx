@@ -274,7 +274,8 @@ export function App() {
             onInspect={(t) => {
               setTarget(t);
               if (t) {
-                setTab('inspect');
+                // Mid-challenge the Check button must stay in reach; the Inspect tab still updates in the background.
+                setTab((cur) => (cur === 'challenge' && challenge ? cur : 'inspect'));
                 setDrawerOpen(true);
               }
             }}

@@ -23,5 +23,16 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm --filter @logisim/app build
+      - name: End-to-end tests
+        run: |
+          pnpm --filter @logisim/app exec playwright install --with-deps chromium
+          pnpm --filter @logisim/app e2e
+      - name: Upload Playwright traces
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-traces
+          path: packages/app/test-results
+          retention-days: 7
       - run: pnpm --filter @logisim/website build
       - run: pnpm --filter @logisim/website test
