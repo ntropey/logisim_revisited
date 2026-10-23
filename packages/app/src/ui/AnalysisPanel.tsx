@@ -2,7 +2,7 @@
  * Logisim Revisited. GPL-3.0-or-later; see LICENSE.
  * Combinational analysis: expression or truth table in, Gray-code K-map with loops, minimal SOP/POS and a circuit out.
  */
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type KeyboardEvent } from 'react';
 import { analyzeTruthTable, synthesizeCircuitFromTruthTable, truthTableFromExpr, type Circuit, type KMapAnalysis, type TruthTable, type TruthValue } from '@logisim/core';
 
 interface Props {
@@ -43,6 +43,14 @@ export function AnalysisPanel({ onBuild }: Props) {
     setError(null);
   };
 
+  const cycle = (minterm: number) => setRows((r) => r.map((x, i) => (i === minterm ? NEXT[x] : x)));
+  const keyCycle = (minterm: number) => (e: KeyboardEvent) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    e.preventDefault();
+    cycle(minterm);
+  };
+  const cellLabel = (v: TruthValue, minterm: number) => `Row ${minterm}: ${v === 'X' ? "don't care" : v}. Press Enter to change.`;
+
   const cell = (v: TruthValue, minterm: number) => {
     const loops = analysis?.loops.filter((l) => l.implicant.minterms.includes(minterm)) ?? [];
     return (
@@ -50,7 +58,11 @@ export function AnalysisPanel({ onBuild }: Props) {
         key={minterm}
         className={`kcell v${v}`}
         style={{ boxShadow: loops.map((l, i) => `inset 0 0 0 ${2 + i * 3}px var(--loop-${l.colorIndex % 6})`).join(',') || undefined }}
-        onClick={() => setRows((r) => r.map((x, i) => (i === minterm ? NEXT[x] : x)))}
+        role="button"
+        tabIndex={0}
+        aria-label={cellLabel(v, minterm)}
+        onClick={() => cycle(minterm)}
+        onKeyDown={keyCycle(minterm)}
       >
         {v}
       </td>
@@ -99,7 +111,7 @@ export function AnalysisPanel({ onBuild }: Props) {
               {vars.map((_, b) => (
                 <td key={b} className="muted">{(i >> (n - 1 - b)) & 1}</td>
               ))}
-              <td className={`kcell v${v}`} onClick={() => setRows((r) => r.map((x, j) => (j === i ? NEXT[x] : x)))}>
+              <td className={`kcell v${v}`} role="button" tabIndex={0} aria-label={cellLabel(v, i)} onClick={() => cycle(i)} onKeyDown={keyCycle(i)}>
                 {v}
               </td>
             </tr>

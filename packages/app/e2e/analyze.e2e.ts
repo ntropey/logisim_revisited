@@ -30,3 +30,15 @@ test('clicking a truth table cell cycles 0, 1 and don\'t care', async ({ page })
   await first.click();
   await expect(first).toHaveText(next(next(start)));
 });
+
+test('a truth table cell can be changed from the keyboard', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('tab', { name: /Analyze/ }).click();
+  const first = page.locator('table.ttable tbody td.kcell').first();
+  await expect(first).toHaveText('0');
+  await first.focus();
+  await page.keyboard.press('Enter');
+  await expect(first).toHaveText('1');
+  await page.keyboard.press('Space');
+  await expect(first).toHaveText('X');
+});
