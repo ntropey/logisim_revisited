@@ -6,13 +6,47 @@
   <meta name="theme-color" content="#F5F2EA" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#15171B" media="(prefers-color-scheme: dark)">
   <meta name="description" content="Logisim Revisited: digital logic circuit simulator with AI Coach, Karnaugh maps, and .circ compatibility">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Logisim Revisited">
+  <meta property="og:title" content="Digital Logic Simulator — Logisim Revisited">
+  <meta property="og:description" content="Build and simulate digital logic circuits in the browser with a 4-state engine, Karnaugh maps, and a signal prover.">
+  <meta property="og:image" content="https://logisimrevisited.com/icon-512.png">
+  <meta property="og:image:width" content="512">
+  <meta property="og:image:height" content="512">
+  <meta property="og:url" content="https://logisimrevisited.com/play/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Digital Logic Simulator — Logisim Revisited">
+  <meta name="twitter:description" content="Build and simulate digital logic circuits in the browser with a 4-state engine, Karnaugh maps, and a signal prover.">
+  <meta name="twitter:image" content="https://logisimrevisited.com/icon-512.png">
+  <link rel="canonical" href="https://logisimrevisited.com/play/">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icon-512.png">
   <link rel="manifest" href="manifest.webmanifest">
-  <title>Logisim Revisited</title>
+  <title>Digital Logic Simulator — Logisim Revisited</title>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Logisim Revisited",
+      "url": "https://logisimrevisited.com/play/",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires JavaScript",
+      "isAccessibleForFree": true,
+      "description": "Free browser digital logic simulator with a 4-state engine, Karnaugh maps, .circ import and export, and a signal prover.",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    }
+  </script>
 </head>
 <body>
   <div id="root"></div>
+  <noscript>
+    <main style="max-width:44rem;margin:10vh auto;padding:0 1.5rem;font-family:system-ui,sans-serif;line-height:1.6">
+      <h1>Digital Logic Circuit Simulator</h1>
+      <p>Logisim Revisited is a free browser simulator for digital logic circuits: 4-state wires, gates, flip-flops, buses, Karnaugh maps, and Logisim .circ files. It runs locally and works offline.</p>
+      <p><a href="../">Browse circuit guides and the component reference</a> or <a href="../play/?daily=1">open the daily challenge</a>.</p>
+    </main>
+  </noscript>
   <script type="module" src="/src/main.tsx"></script>
 </body>
 </html>

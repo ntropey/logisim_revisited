@@ -1,6 +1,6 @@
 # Port Plan & Status
 
-Last updated 2026-10-22.
+Last updated 2026-10-26.
 
 ## Done
 
@@ -41,4 +41,4 @@ Last updated 2026-10-22.
   - **Custom Component Blocks (Sub-Circuits)**: Enable any circuit sheet to be instantiated as a reusable block in the parts palette with auto-generated or custom pin perimeters.
   - **Hierarchical Simulation**: Modular netlist evaluation with cycle/recursion guards and live in-block inspection (double-click to step inside a running sub-circuit).
   - **Advanced Memory / Microcode**: Interactive hex editor for large RAM/ROM blocks to power microcode sequencers and assembly program loading (ideal for 8-bit RISC / CPU capstone projects).
-- **Domain**: the custom domain is attached but GitHub has not issued an HTTPS certificate; see the notes on re-triggering the DNS check in the repository settings.
+- **Domain**: `logisimrevisited.com` serves over HTTPS (verified 2026-10-26).
