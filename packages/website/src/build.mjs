@@ -375,7 +375,7 @@ add('privacy.html', {
 <h2>Advertising</h2>
 <p>This website may show ads served by Google AdSense. Ad scripts load only after you give consent, and the banner follows Google Consent Mode v2. Without consent no ad script is loaded. You can change your choice at any time using the privacy settings link in the banner or in the app's Settings.</p>
 <h2>Contact</h2>
-<p>Questions or requests can be filed as an issue on <a href="${REPO}/issues">GitHub</a>.</p>`,
+<p>Questions or requests can be sent to <a href="mailto:support@revisitedlabs.com">support@revisitedlabs.com</a> or filed as an issue on <a href="${REPO}/issues">GitHub</a>.</p>`,
 });
 add('404.html', {
   root: '/',
