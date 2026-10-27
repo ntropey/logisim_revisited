@@ -40,6 +40,15 @@ jobs:
         env:
           SITE_URL: https://logisimrevisited.com/
           SITE_PASSWORD: ${{ inputs.gate && secrets.SITE_PASSWORD || '' }}
+      - name: Deploy to Cloudflare Pages
+        if: env.CF_API_TOKEN != ''
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: 6c9d1596276c79e822640d0a8d429c60
+          command: pages deploy packages/website/dist --project-name=logisim-revisited --branch=main
+        env:
+          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       - uses: actions/upload-pages-artifact@v5
         with:
           path: packages/website/dist
