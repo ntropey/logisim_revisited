@@ -26,8 +26,8 @@ const siteUrl = (process.env.SITE_URL ?? '').replace(/\/?$/, '/');
 const GROUPS = [
   ['Arithmetic', ['half-adder', 'full-adder', '4-bit-alu']],
   ['Plexers', ['multiplexer']],
-  ['Sequential', ['jk-flip-flop']],
-  ['Combinational', ['k-map-solver', 'short-circuit-demo']],
+  ['Sequential', ['sr-latch', 'd-flip-flop', 't-flip-flop', 'jk-flip-flop']],
+  ['Combinational', ['xor-parity', 'k-map-solver', 'short-circuit-demo']],
   ['Displays', ['7-segment-decoder']],
 ].map(([name, slugs], i) => ({
   name,
@@ -110,12 +110,22 @@ ${next ? `<a href="${href(next)}"><small>Next</small>${esc(next.title)} →</a>`
 const LEGEND = '<div class="legend"><span class="lg place">0</span><span class="lg e">1</span><span class="lg z">Z floating</span><span class="lg elim">E conflict (dashed)</span></div>';
 
 /** Simulated truth table as HTML, or '' for circuits that do not have one. */
-function truthTableHtml(slug) {
-  const t = simulatedTruthTable(slug);
-  if (!t) return '';
-  return `<table class="truth"><caption>Every input combination, run through the simulator</caption><thead><tr>${t.inputs.map((n) => `<th>${esc(n)}</th>`).join('')}${t.outputs.map((n) => `<th class="out">${esc(n)}</th>`).join('')}</tr></thead><tbody>${t.rows
+function truthTableHtml(slug, tt = simulatedTruthTable(slug)) {
+  if (!tt) return '';
+  const framesJson = JSON.stringify(tt.rows.map((r) => r.svg)).replace(/</g, '\\u003c');
+  return `<table class="truth" data-initial-row="${tt.initialRow}"><caption>Every input combination, run through the simulator — click any row to update the schematic</caption><thead><tr>${tt.inputs.map((n) => `<th>${esc(n)}</th>`).join('')}${tt.outputs.map((n) => `<th class="out">${esc(n)}</th>`).join('')}</tr></thead><tbody>${tt.rows
     .map((r) => `<tr>${r.inputs.map((b) => `<td>${b}</td>`).join('')}${r.outputs.map((v) => `<td class="out v${esc(v)}">${esc(v)}</td>`).join('')}</tr>`)
-    .join('')}</tbody></table>`;
+    .join('')}</tbody></table><script>(function(){var f=${framesJson},t=document.querySelector('table.truth'),s=document.querySelector('.schematic-stage'),bs=document.querySelectorAll('.poke-btn');if(!t||!s)return;var rs=t.querySelectorAll('tbody tr'),n=bs.length,cur=Number(t.getAttribute('data-initial-row'))||0;function set(i){cur=i;if(f[i])s.innerHTML=f[i];rs.forEach(function(r,idx){r.classList.toggle('active',idx===i);r.setAttribute('aria-selected',idx===i?'true':'false');});bs.forEach(function(b,k){var bit=(i>>(n-1-k))&1;b.setAttribute('aria-pressed',bit?'true':'false');var v=b.querySelector('.val');if(v){v.textContent=String(bit);v.className='val v'+bit;}});}rs.forEach(function(r,idx){r.tabIndex=0;r.setAttribute('role','button');r.addEventListener('click',function(){set(idx);});r.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();set(idx);}else if(e.key==='ArrowDown'&&idx+1<rs.length){e.preventDefault();rs[idx+1].focus();set(idx+1);}else if(e.key==='ArrowUp'&&idx>0){e.preventDefault();rs[idx-1].focus();set(idx-1);}});});bs.forEach(function(b,k){b.addEventListener('click',function(){set(cur^(1<<(n-1-k)));});});set(cur);})();</script>`;
+}
+
+function pokeButtonsHtml(tt) {
+  if (!tt) return '';
+  return `<div class="poke-bar" role="group" aria-label="Toggle circuit inputs"><span class="poke-label">Poke inputs:</span>${tt.inputs
+    .map((name, idx) => {
+      const bit = tt.rows[tt.initialRow].inputs[idx];
+      return `<button type="button" class="poke-btn" data-input="${idx}" aria-pressed="${bit === 1}">${esc(name)} = <span class="val v${bit}">${bit}</span></button>`;
+    })
+    .join('')}</div>`;
 }
 
 add('index.html', {
@@ -193,6 +203,7 @@ ORDERED.forEach((t, i) => {
   const prev = ORDERED[i - 1];
   const next = ORDERED[i + 1];
   const g = GROUPS.find((x) => x.items.includes(t));
+  const tt = simulatedTruthTable(t.example);
   add(`circuits/${t.slug}.html`, {
     section: 'circuits/',
     wide: true,
@@ -211,11 +222,11 @@ ${t.body.map((p) => `<p>${esc(p)}</p>`).join('\n')}
 ${t.tip ? `<p class="tip"><strong>Tip:</strong> ${esc(t.tip)}</p>` : ''}
 </div>
 <div class="figure-col">
-<figure class="circuit">${circuitSchematic(t.example)}
+<figure class="circuit"><div class="schematic-stage">${circuitSchematic(t.example)}</div>${pokeButtonsHtml(tt)}
 <figcaption>As it opens in the app, with live wire colors.${LEGEND}</figcaption>
 <p><a class="btn" href="../play/?p=${esc(t.example)}">Open in the app</a></p>
 </figure>
-${truthTableHtml(t.example)}
+${truthTableHtml(t.example, tt)}
 </div>
 </div>
 <nav class="pager">
@@ -335,24 +346,6 @@ ${next ? `<a href="${next.slug}.html"><small>Next</small>${esc(next.shortName)} 
   });
 });
 
-// The J-K guide was published briefly as circuits/sr-latch.html; keep that address working.
-pages.push([
-  'circuits/sr-latch.html',
-  `<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<title>J-K Flip-Flop | Logisim Revisited</title>
-<meta name="robots" content="noindex">
-<link rel="canonical" href="${abs('circuits/jk-flip-flop.html')}">
-<meta http-equiv="refresh" content="0; url=jk-flip-flop.html">
-</head>
-<body>
-<p>This guide moved to <a href="jk-flip-flop.html">J-K Flip-Flop</a>.</p>
-</body>
-</html>`,
-]);
-
 // ---- about, privacy, 404
 add('about.html', {
   title: 'About Logisim Revisited',
@@ -413,11 +406,11 @@ const hostname = siteUrl !== '/' ? new URL(siteUrl).hostname : '';
 if (hostname && !hostname.endsWith('github.io')) writeFileSync(join(out, 'CNAME'), hostname + '\n');
 
 writeFileSync(join(out, 'ads.txt'), `google.com, pub-${ADSENSE_CLIENT.replace('ca-pub-', '')}, DIRECT, f08c47fec0942fa0\n`);
-writeFileSync(join(out, '_redirects'), '/circuits/sr-latch.html /circuits/jk-flip-flop.html 301\n');
+writeFileSync(join(out, '_redirects'), '');
 
 const gated = Boolean(process.env.SITE_PASSWORD);
 if (!gated && siteUrl !== '/') {
-  const urls = pages.map(([p]) => p).filter((p) => p !== '404.html' && p !== 'circuits/sr-latch.html').map((p) => siteUrl + p.replace(/index\.html$/, ''));
+  const urls = pages.map(([p]) => p).filter((p) => p !== '404.html').map((p) => siteUrl + p.replace(/index\.html$/, ''));
   if (existsSync(appDist)) urls.push(siteUrl + 'play/');
   writeFileSync(
     join(out, 'sitemap.xml'),

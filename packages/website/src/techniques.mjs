@@ -138,6 +138,70 @@ const TECHNIQUES = [
     example: 'short-circuit-demo',
   },
 
+  {
+    slug: 'sr-latch',
+    name: 'S-R Flip-Flop',
+    level: 'Easy',
+    summary: 'Sets Q = 1 when S = 1 and resets Q = 0 when R = 1 on a rising clock edge, while S = R = 0 holds the stored bit.',
+    category: 'Sequential',
+    body: [
+      'The S-R (Set-Reset) Flip-Flop is a clocked 1-bit sequential memory element with Set (S), Clock (CLK), and Reset (R) inputs.',
+      'Unlike an unclocked latch that reacts immediately whenever its inputs change, the clocked S-R Flip-Flop samples S and R only at the rising edge of CLK (when the clock transitions from 0 to 1).',
+      'On a rising clock edge: S = 0, R = 0 holds the current state Q; S = 1, R = 0 sets Q to 1 (and NotQ to 0); S = 0, R = 1 resets Q to 0 (and NotQ to 1).',
+      'Driving both S = 1 and R = 1 at the same time is the forbidden (invalid) state in S-R design because Set and Reset conflict. A J-K Flip-Flop resolves that conflict by toggling Q when both inputs are 1.',
+    ],
+    tip: 'Avoid driving S = 1 and R = 1 simultaneously. Open the circuit in the simulator, poke S and R, and click Tick to step through Set, Hold, and Reset.',
+    example: 'sr-latch',
+  },
+
+  {
+    slug: 't-flip-flop',
+    name: 'T Flip-Flop Frequency Divider',
+    level: 'Easy',
+    summary: 'Toggles Q between 0 and 1 on each rising clock edge when T = 1, dividing the clock frequency by two.',
+    category: 'Sequential',
+    body: [
+      'A T (Toggle) Flip-Flop flips its stored bit Q (~Q) on the rising edge (0 → 1 transition) of Clock (CLK) whenever its Toggle input T is 1, and holds Q steady when T is 0.',
+      'Its characteristic equation is Q(next) = T ⊕ Q. Because Q changes state only once per full clock period (on the rising edge), tying T = 1 makes output Q oscillate at exactly half the frequency of CLK.',
+      'This divide-by-2 behavior is the foundation of binary ripple counters and synchronous up-counters: chaining N T Flip-Flops divides the input clock by 2^N and counts from 0 to 2^N - 1.',
+      'In this circuit T starts at 1. Each pair of Tick clicks completes one full clock cycle and toggles Q once.',
+    ],
+    tip: 'Keep T = 1 and click Tick repeatedly: Q flips only on the 0 → 1 rising clock edge, dividing the clock frequency by 2.',
+    example: 't-flip-flop',
+  },
+
+  {
+    slug: 'd-flip-flop',
+    name: 'D Flip-Flop',
+    level: 'Easy',
+    summary: 'Captures the data bit on D at the rising edge of the clock and holds it steady on Q until the next rising edge.',
+    category: 'Sequential',
+    body: [
+      'The D (Data or Delay) Flip-Flop is the fundamental building block of CPU registers, shift registers, and synchronous state machines.',
+      'Its characteristic equation is simply Q(next) = D at the rising edge (0 → 1 transition) of Clock (CLK). Whatever 0 or 1 bit sits on D at the moment CLK rises is captured onto Q, while NotQ outputs the complement.',
+      'Between rising clock edges, Q is completely isolated from D: you can toggle D back and forth without disturbing the stored output until the next 0 → 1 clock edge arrives.',
+      'Grouping four or eight D Flip-Flops on a shared clock line forms a parallel multi-bit Register.',
+    ],
+    tip: 'Poke D to change the input data bit, then click Tick until CLK transitions from 0 to 1 to watch Q capture the new value.',
+    example: 'd-flip-flop',
+  },
+
+  {
+    slug: 'xor-parity',
+    name: 'XOR Gate & 3-Bit Odd Parity Checker',
+    level: 'Easy',
+    summary: 'Cascades two 2-input XOR gates to compute A ⊕ B ⊕ C, outputting 1 whenever an odd number of inputs are 1.',
+    category: 'Combinational',
+    body: [
+      'An Exclusive-OR (XOR) gate outputs 1 when its two inputs differ (Y = A ⊕ B = A·~B + ~A·B) and 0 when they are equal.',
+      'Because XOR is associative, cascading two 2-input XOR gates computes the 3-bit XOR sum Parity = (A ⊕ B) ⊕ C, which is 1 whenever an odd number of inputs (one or all three) are High (1).',
+      'Notice that flipping any single input bit (A, B, or C) always flips the final Parity output—the exact property used by memory buses and serial links to detect single-bit transmission errors.',
+      'The same two-stage XOR cascade also computes the Sum bit (A ⊕ B ⊕ Cin) inside every Full Adder.',
+    ],
+    tip: 'Click any row in the truth table to apply that (A, B, C) input combination directly to the schematic and watch the live wire colors update.',
+    example: 'xor-parity',
+  },
+
 ];
 
 export { TECHNIQUES };

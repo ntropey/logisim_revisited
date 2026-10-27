@@ -64,7 +64,7 @@ test('internal links resolve', () => {
 test('every circuit guide and component page has a rendered schematic', () => {
   for (const dir of ['circuits', 'components']) {
     for (const name of readdirSync(join(dist, dir))) {
-      if (name === 'index.html' || name === 'sr-latch.html') continue;
+      if (name === 'index.html') continue;
       const html = readFileSync(join(dist, dir, name), 'utf8');
       assert.match(html, /<svg class="schematic" viewBox="[-\d.]+ [-\d.]+ [\d.]+ [\d.]+"/, `${dir}/${name}`);
     }
@@ -127,19 +127,32 @@ test('top Search Console component and landing pages contain targeted pinouts an
   assert.match(online, /Logisim Online in Your Browser \(No Java Required\)/);
 });
 
-test('combinational guides show a simulated truth table with the right answers', () => {
+test('combinational guides show an interactive simulated truth table and input poke controls', () => {
   const html = readFileSync(join(dist, 'circuits', 'half-adder.html'), 'utf8');
   const rows = [...html.matchAll(/<tr><td>(\d)<\/td><td>(\d)<\/td><td class="out v\w">(\w)<\/td><td class="out v\w">(\w)<\/td><\/tr>/g)].map((m) => m.slice(1).join(''));
   assert.deepEqual(rows, ['0000', '0110', '1010', '1101']); // A B Sum Carry
+  assert.match(html, /class="poke-bar"/);
+  assert.match(html, /class="poke-btn"/);
+  assert.match(html, /data-initial-row="3"/);
+
+  const xorParity = readFileSync(join(dist, 'circuits', 'xor-parity.html'), 'utf8');
+  const parityRows = [...xorParity.matchAll(/<tr><td>(\d)<\/td><td>(\d)<\/td><td>(\d)<\/td><td class="out v\w">(\w)<\/td><\/tr>/g)].map((m) => m.slice(1).join(''));
+  assert.deepEqual(parityRows, ['0000', '0011', '0101', '0110', '1001', '1010', '1100', '1111']);
+  assert.match(xorParity, /class="poke-bar"/);
+
   assert.match(readFileSync(join(dist, 'circuits', 'short-circuit-demo.html'), 'utf8'), /class="out vE">E</);
   assert.doesNotMatch(readFileSync(join(dist, 'circuits', 'jk-flip-flop.html'), 'utf8'), /<table class="truth"/);
 });
 
-test('the renamed flip-flop guide keeps its old address in HTML and _redirects', () => {
-  const html = readFileSync(join(dist, 'circuits', 'sr-latch.html'), 'utf8');
-  assert.match(html, /http-equiv="refresh" content="0; url=jk-flip-flop.html"/);
-  const redirects = readFileSync(join(dist, '_redirects'), 'utf8');
-  assert.match(redirects, /^\/circuits\/sr-latch\.html \/circuits\/jk-flip-flop\.html 301$/m);
+test('all 4 new high-demand circuit guides exist as indexable pages with schematics', () => {
+  for (const slug of ['sr-latch', 't-flip-flop', 'd-flip-flop', 'xor-parity']) {
+    const html = readFileSync(join(dist, 'circuits', `${slug}.html`), 'utf8');
+    assert.doesNotMatch(html, /<meta name="robots" content="noindex">/, slug);
+    assert.doesNotMatch(html, /http-equiv="refresh"/, slug);
+    assert.match(html, new RegExp(`href="\\.\\./play/\\?p=${slug}"`), slug);
+  }
+  const alu = readFileSync(join(dist, 'circuits', '4-bit-alu.html'), 'utf8');
+  assert.match(alu, /class="bus-badge"/);
 });
 
 test('no template leaks such as undefined, null or NaN in page text', () => {

@@ -29,22 +29,27 @@ const isOutput = (c) => c.type === 'Pin' && c.attrs.output;
  * inputs. Returns null for anything else (sequential parts, buses, too many inputs).
  */
 export function simulatedTruthTable(slug) {
-  const { circuit } = preset(slug);
+  const { name, circuit } = preset(slug);
   if (circuit.components.some((c) => SEQUENTIAL.has(c.type))) return null;
   const inputs = circuit.components.filter(isInput);
   const outputs = circuit.components.filter(isOutput);
   if (!inputs.length || !outputs.length || inputs.length > MAX_TABLE_INPUTS || inputs.some((c) => (c.attrs.width ?? 1) !== 1)) return null;
+  const initialBits = inputs.map((c) => (c.attrs.value === '1' ? 1 : 0));
+  let initialRow = 0;
   const rows = [];
   for (let n = 0; n < 1 << inputs.length; n++) {
     const bits = inputs.map((_, i) => (n >> (inputs.length - 1 - i)) & 1);
+    if (bits.every((b, i) => b === initialBits[i])) initialRow = n;
     const set = new Map(inputs.map((c, i) => [c.id, String(bits[i])]));
-    const sim = simulateCircuit({
+    const rowCircuit = {
       ...circuit,
       components: circuit.components.map((c) => (set.has(c.id) ? { ...c, attrs: { ...c.attrs, value: set.get(c.id) } } : c)),
-    });
-    rows.push({ inputs: bits, outputs: outputs.map((c) => valueToDisplayString(sim.pinValues[c.id].in0)) });
+    };
+    const sim = simulateCircuit(rowCircuit);
+    const svg = schematicSvg(rowCircuit, { label: `Schematic of the ${name} circuit`, sim });
+    rows.push({ inputs: bits, outputs: outputs.map((c) => valueToDisplayString(sim.pinValues[c.id].in0)), svg });
   }
-  return { inputs: inputs.map((c) => c.attrs.label ?? c.id), outputs: outputs.map((c) => c.attrs.label ?? c.id), rows };
+  return { inputs: inputs.map((c) => c.attrs.label ?? c.id), outputs: outputs.map((c) => c.attrs.label ?? c.id), initialRow, rows };
 }
 
 /** One component with its default settings and unconnected pins. */

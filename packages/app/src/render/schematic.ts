@@ -240,6 +240,49 @@ export function wirePrims(circuit: Circuit, sim: SimulationResult): Prim[] {
   return out;
 }
 
+/** Compact hex/binary value badges on the longest wire segment of each multi-bit bus net (width > 1). */
+export function busBadgePrims(circuit: Circuit, sim: SimulationResult): Prim[] {
+  const byNet = new Map<string, typeof circuit.wires>();
+  for (const w of circuit.wires) {
+    const net = sim.wireToNet[w.id];
+    if (!net) continue;
+    const v = sim.netValues[net];
+    if (!v || v.width <= 1) continue;
+    const list = byNet.get(net) ?? [];
+    list.push(w);
+    byNet.set(net, list);
+  }
+  const out: Prim[] = [];
+  for (const [net, wires] of byNet) {
+    const v = sim.netValues[net];
+    if (!v) continue;
+    const candidates = wires
+      .map((w) => ({
+        w,
+        len: Math.hypot(w.to.x - w.from.x, w.to.y - w.from.y),
+        horiz: w.from.y === w.to.y,
+      }))
+      .filter((c) => c.len >= 30);
+    if (!candidates.length) continue;
+    candidates.sort((a, b) => (a.horiz !== b.horiz ? (a.horiz ? -1 : 1) : b.len - a.len));
+    const { w } = candidates[0];
+    const mx = (w.from.x + w.to.x) / 2;
+    const my = (w.from.y + w.to.y) / 2;
+    const text = valueToDisplayString(v);
+    const bw = Math.max(24, text.length * 6.5 + 8);
+    const bh = 15;
+    out.push({
+      k: 'g',
+      transform: `translate(${mx} ${my})`,
+      children: [
+        { k: 'rect', x: -bw / 2, y: -bh / 2, w: bw, h: bh, rx: 4, cls: 'bus-badge', stroke: valueColor(v) },
+        { k: 'text', x: 0, y: 0, text, cls: 'bus-badge-text', anchor: 'middle', central: true },
+      ],
+    });
+  }
+  return out;
+}
+
 /** Bounds of everything drawn for the circuit. */
 export function circuitBounds(circuit: Circuit): Rect | null {
   const xs: number[] = [];
@@ -301,6 +344,7 @@ export function schematicSvg(circuit: Circuit, opts: SchematicOptions): string {
   const y = b.y0 - pad;
   const w = b.x1 - b.x0 + pad * 2;
   const h = b.y1 - b.y0 + pad * 2;
-  const body = [...wirePrims(circuit, sim), ...circuit.components.flatMap((c) => componentPrims(c, sim, opts.glyph))].map(primToSvg).join('');
+  const badges = opts.glyph?.showValues === false ? [] : busBadgePrims(circuit, sim);
+  const body = [...wirePrims(circuit, sim), ...badges, ...circuit.components.flatMap((c) => componentPrims(c, sim, opts.glyph))].map(primToSvg).join('');
   return `<svg class="schematic" viewBox="${x} ${y} ${w} ${h}" width="${w}" height="${h}" role="img" aria-label="${esc(opts.label)}">${body}</svg>`;
 }

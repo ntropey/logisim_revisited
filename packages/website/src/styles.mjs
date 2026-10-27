@@ -140,6 +140,16 @@ table.truth .out { border-left: 1px solid var(--line); }
 table.truth td.v1 { color: var(--wire-1); font-weight: 600; }
 table.truth td.v0 { color: var(--wire-0); }
 table.truth td.vE { color: var(--wire-e); background: var(--elim-bg); font-weight: 600; }
+table.truth tbody tr { cursor: pointer; transition: background .12s; }
+table.truth tbody tr:hover { background: var(--surface-2); }
+table.truth tbody tr.active { background: var(--accent-soft); outline: 2px solid var(--accent); outline-offset: -2px; }
+.poke-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
+.poke-label { font: 600 .75rem var(--font-ui); color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-right: 2px; }
+.poke-btn { display: inline-flex; align-items: center; gap: 4px; padding: 5px 11px; border-radius: 7px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); font: 500 .85rem var(--font-mono); cursor: pointer; transition: border-color .12s, background .12s; }
+.poke-btn:hover { border-color: var(--accent); background: var(--surface-2); }
+.poke-btn[aria-pressed="true"] { border-color: var(--wire-1); background: var(--elim-bg); }
+.poke-btn .val.v1 { color: var(--wire-1); font-weight: 600; }
+.poke-btn .val.v0 { color: var(--wire-0); font-weight: 600; }
 
 @media (max-width: 860px) {
   .figure-col { position: static; }

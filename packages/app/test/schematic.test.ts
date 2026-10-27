@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { PRESET_CIRCUITS, simulateCircuit, type ComponentInstance } from '@logisim/core';
 import { valueBoxWidth } from '../src/render/geometry';
-import { componentPrims, schematicSvg } from '../src/render/schematic';
+import { busBadgePrims, componentPrims, schematicSvg } from '../src/render/schematic';
 
 describe('shared schematic renderer', () => {
   it('renders every preset as a self-sized SVG without template leaks', () => {
@@ -11,6 +11,17 @@ describe('shared schematic renderer', () => {
       expect(svg).not.toMatch(/NaN|undefined|null/);
       expect(svg.match(/class="pin-dot"/g)?.length).toBeGreaterThan(0);
     }
+  });
+
+  it('renders multi-bit bus value badges on bus wires in 4-Bit ALU and Hex Counter Display', () => {
+    const alu = PRESET_CIRCUITS.find((p) => p.slug === '4-bit-alu')!;
+    const sim = simulateCircuit(alu.circuit);
+    const badges = busBadgePrims(alu.circuit, sim);
+    expect(badges.length).toBeGreaterThanOrEqual(4);
+    const svg = schematicSvg(alu.circuit, { label: alu.name, sim });
+    expect(svg).toContain('class="bus-badge"');
+    expect(svg).toContain('class="bus-badge-text"');
+    expect(svg).toContain('>0x8</text>');
   });
 
   it('colors wires by their simulated value', () => {
