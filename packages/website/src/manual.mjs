@@ -13,7 +13,7 @@ export const MANUAL = [
 <h2>Your first circuit</h2>
 <ol>
 <li>Pick a gate from the component palette and click the canvas to place it.</li>
-<li>Place two <a href="../components/pin.html">input pins and an output pin</a>.</li>
+<li>Place two <a href="../components/pin">input pins and an output pin</a>.</li>
 <li>Choose the <strong>Wire</strong> tool and drag from one pin to another.</li>
 <li>Switch to the <strong>Poke</strong> tool and click an input to toggle it. Wires update immediately.</li>
 </ol>
@@ -38,16 +38,16 @@ export const MANUAL = [
 <p>When a circuit does not match the target truth table or behaves unexpectedly, open the <strong>AI Coach</strong> drawer and choose <strong>Coach me</strong>. Instead of giving away the entire solution at once, the coach reveals help in four progressive stages so you can stop as soon as the idea clicks:</p>
 <ol>
 <li><strong>1. Where to look:</strong> Highlights the specific component, pin, or net where the discrepancy or wiring error originates (such as an unconnected input pin or a short-circuit bus).</li>
-<li><strong>2. The pattern:</strong> Identifies the category of digital logic issue—for example, competing drivers on a <a href="../components/tunnel.html">Tunnel</a> net, an inverted Carry chain in a <a href="../circuits/full-adder.html">Full Adder</a>, or a wrong pin order on a <a href="../components/7-segment-display.html">7-Segment Display</a>.</li>
-<li><strong>3. The logic:</strong> Shows the exact input combination (truth-table row) where your circuit’s actual output diverges from the expected Boolean output, or traces the controlling input on an <a href="../components/and-gate.html">AND</a>, <a href="../components/or-gate.html">OR</a>, or <a href="../components/xor-gate.html">XOR Gate</a>.</li>
+<li><strong>2. The pattern:</strong> Identifies the category of digital logic issue—for example, competing drivers on a <a href="../components/tunnel">Tunnel</a> net, an inverted Carry chain in a <a href="../circuits/full-adder">Full Adder</a>, or a wrong pin order on a <a href="../components/7-segment-display">7-Segment Display</a>.</li>
+<li><strong>3. The logic:</strong> Shows the exact input combination (truth-table row) where your circuit’s actual output diverges from the expected Boolean output, or traces the controlling input on an <a href="../components/and-gate">AND</a>, <a href="../components/or-gate">OR</a>, or <a href="../components/xor-gate">XOR Gate</a>.</li>
 <li><strong>4. Conclusion:</strong> Explains the concrete fix needed to repair the circuit.</li>
 </ol>
 <h2>"Why is this wire 0, 1, E, or Z?" Signal Prover</h2>
-<p>Click any wire, <a href="../components/pin.html">Pin</a>, <a href="../components/probe.html">Probe</a>, flip-flop (<a href="../components/s-r-flip-flop.html">S-R</a>, <a href="../components/t-flip-flop.html">T</a>, <a href="../components/j-k-flip-flop.html">J-K</a>, or <a href="../components/d-flip-flop.html">D Flip-Flop</a>), or gate on the schematic and ask <strong>Why?</strong> The backward signal provenance tracer walks upstream from that point through every gate and net that determines its current state:</p>
+<p>Click any wire, <a href="../components/pin">Pin</a>, <a href="../components/probe">Probe</a>, flip-flop (<a href="../components/s-r-flip-flop">S-R</a>, <a href="../components/t-flip-flop">T</a>, <a href="../components/j-k-flip-flop">J-K</a>, or <a href="../components/d-flip-flop">D Flip-Flop</a>), or gate on the schematic and ask <strong>Why?</strong> The backward signal provenance tracer walks upstream from that point through every gate and net that determines its current state:</p>
 <ul>
 <li><strong>Why is this 0 or 1?</strong> Traces the active driving gate and highlights whether a controlling input (such as a single <span class="mono">0</span> on an AND gate or <span class="mono">1</span> on an OR gate) determined the output.</li>
-<li><strong>Why is this E (red conflict)?</strong> Pinpoints the two or more competing outputs driving <span class="mono">0</span> and <span class="mono">1</span> onto the same wire simultaneously, or identifies the upstream floating/invalid input propagating an error. Try it live in the <a href="../circuits/short-circuit-demo.html">Short-Circuit Demo</a>.</li>
-<li><strong>Why is this Z (blue floating)?</strong> Shows that no active output pin is driving the net (for example, an unconnected wire or a <a href="../components/controlled-buffer.html">Tri-State Buffer</a> whose Enable pin is <span class="mono">0</span>).</li>
+<li><strong>Why is this E (red conflict)?</strong> Pinpoints the two or more competing outputs driving <span class="mono">0</span> and <span class="mono">1</span> onto the same wire simultaneously, or identifies the upstream floating/invalid input propagating an error. Try it live in the <a href="../circuits/short-circuit-demo">Short-Circuit Demo</a>.</li>
+<li><strong>Why is this Z (blue floating)?</strong> Shows that no active output pin is driving the net (for example, an unconnected wire or a <a href="../components/controlled-buffer">Tri-State Buffer</a> whose Enable pin is <span class="mono">0</span>).</li>
 </ul>`,
   },
   {
@@ -61,7 +61,7 @@ export const MANUAL = [
 <li>The minimizer reports a minimal sum of products and product of sums, using Quine-McCluskey.</li>
 <li><strong>Synthesize</strong> builds a two-level AND-OR circuit from the result and places it on the canvas.</li>
 </ul>
-<p>New to K-maps? Start with the <a href="../learn/k-map-tutorial.html">tutorial</a>.</p>`,
+<p>New to K-maps? Start with the <a href="../learn/k-map-tutorial">tutorial</a>.</p>`,
   },
   {
     slug: 'import-export',
@@ -99,6 +99,6 @@ export const MANUAL = [
     summary: 'What is stored, and how advertising consent works.',
     body: `
 <p>Your circuits and settings are stored in your browser's local storage, on your device. The simulator and coach run on your device and send nothing to a server.</p>
-<p>This website may show ads. Ad scripts load only after you consent, and the consent banner follows Google Consent Mode v2. You can change your choice at any time from the link in the banner or the app's Settings. Details are on the <a href="../privacy.html">privacy page</a>.</p>`,
+<p>This website may show ads. Ad scripts load only after you consent, and the consent banner follows Google Consent Mode v2. You can change your choice at any time from the link in the banner or the app's Settings. Details are on the <a href="../privacy">privacy page</a>.</p>`,
   },
 ];

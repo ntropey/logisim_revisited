@@ -44,21 +44,43 @@ test('no British spellings', () => {
   }
 });
 
-test('internal links resolve', () => {
+test('internal links resolve and use extensionless URLs', () => {
   const broken = [];
+  const htmlLinks = [];
   for (const file of htmlFiles(dist)) {
     const html = readFileSync(file, 'utf8');
     for (const [, href] of html.matchAll(/<a\s[^>]*href="([^"]+)"/gi)) {
       if (/^(https?:|mailto:|tel:|#|javascript:)/i.test(href)) continue;
       const clean = href.split('#')[0].split('?')[0];
       if (!clean) continue;
+      if (clean.endsWith('.html')) htmlLinks.push(`${file.slice(dist.length)} -> ${href}`);
       let target = clean.startsWith('/') ? join(dist, clean) : resolve(dirname(file), clean);
       if (target.startsWith(join(dist, 'play'))) continue; // the app is a separate build
       if (existsSync(target) && statSync(target).isDirectory()) target = join(target, 'index.html');
+      else if (!existsSync(target) && existsSync(target + '.html')) target = target + '.html';
       if (!existsSync(target)) broken.push(`${file.slice(dist.length)} -> ${href}`);
     }
   }
   assert.deepEqual(broken, []);
+  assert.deepEqual(htmlLinks, []);
+});
+
+test('canonical URLs, og:url, JSON-LD, and sitemap.xml never end in .html', () => {
+  for (const file of htmlFiles(dist)) {
+    const html = readFileSync(file, 'utf8');
+    const canonical = html.match(/<link rel="canonical" href="([^"]+)">/);
+    if (canonical) assert.doesNotMatch(canonical[1], /\.html$/, `${file} canonical ends in .html: ${canonical[1]}`);
+    const ogUrl = html.match(/<meta property="og:url" content="([^"]+)">/);
+    if (ogUrl) assert.doesNotMatch(ogUrl[1], /\.html$/, `${file} og:url ends in .html: ${ogUrl[1]}`);
+    for (const [, ld] of html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) {
+      assert.doesNotMatch(ld, /\.html"/, `${file} JSON-LD contains .html URL`);
+    }
+  }
+  const sitemapPath = join(dist, 'sitemap.xml');
+  if (existsSync(sitemapPath)) {
+    const sitemap = readFileSync(sitemapPath, 'utf8');
+    assert.doesNotMatch(sitemap, /\.html<\/loc>/, 'sitemap.xml contains .html URLs');
+  }
 });
 
 test('every circuit guide and component page has a rendered schematic', () => {
@@ -93,12 +115,12 @@ test('top Search Console component and landing pages contain targeted pinouts an
   assert.match(seg7, /<title>7-Segment Display Pins &amp; Pinout in Logisim \| Logisim Revisited<\/title>/);
   assert.match(seg7, /seg_g \(g\)/);
   assert.match(seg7, /seg_dp \(dp\)/);
-  assert.match(seg7, /hex-digit-display\.html/);
+  assert.match(seg7, /href="hex-digit-display"/);
 
   const sr = readFileSync(join(dist, 'components', 's-r-flip-flop.html'), 'utf8');
   assert.match(sr, /<title>S-R Flip-Flop in Logisim/);
   assert.match(sr, /Invalid \/ Forbidden/);
-  assert.match(sr, /jk-flip-flop\.html/);
+  assert.match(sr, /href="\.\.\/circuits\/jk-flip-flop"/);
 
   const tff = readFileSync(join(dist, 'components', 't-flip-flop.html'), 'utf8');
   assert.match(tff, /<title>T Flip-Flop \(Toggle Flip-Flop\) in Logisim/);
@@ -108,7 +130,7 @@ test('top Search Console component and landing pages contain targeted pinouts an
   const xor = readFileSync(join(dist, 'components', 'xor-gate.html'), 'utf8');
   assert.match(xor, /<title>XOR Logic Gate \(Exclusive OR\) in Logisim/);
   assert.match(xor, /A·~B \+ ~A·B/);
-  assert.match(xor, /half-adder\.html/);
+  assert.match(xor, /href="\.\.\/circuits\/half-adder"/);
 
   const pin = readFileSync(join(dist, 'components', 'pin.html'), 'utf8');
   assert.match(pin, /<title>Input Pin &amp; Output Pin in Logisim/);
@@ -118,7 +140,7 @@ test('top Search Console component and landing pages contain targeted pinouts an
   const tunnel = readFileSync(join(dist, 'components', 'tunnel.html'), 'utf8');
   assert.match(tunnel, /<title>Tunnel in Logisim — How to Connect Wires Without Crossing/);
   assert.match(tunnel, /case-sensitive/);
-  assert.match(tunnel, /short-circuit-demo\.html/);
+  assert.match(tunnel, /href="\.\.\/circuits\/short-circuit-demo"/);
 
   const aiCoach = readFileSync(join(dist, 'manual', 'ai-coach.html'), 'utf8');
   assert.match(aiCoach, /Logisim AI Circuit Coach &amp; Signal Prover/);

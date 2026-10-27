@@ -9,7 +9,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ADSENSE_CLIENT, applyConsent } from './consent.mjs';
 import { applyGate } from './gate.mjs';
-import { cards, esc, page, rail, REPO } from './layout.mjs';
+import { cards, cleanPath, esc, page, rail, REPO } from './layout.mjs';
 import { LEARN } from './learn.mjs';
 import { MANUAL } from './manual.mjs';
 import { COMPONENTS } from './components.mjs';
@@ -46,7 +46,7 @@ const COMPONENT_CATEGORIES = [...new Set(COMPONENTS.map((c) => c.category))];
 
 const pages = []; // [path, html]
 const add = (path, opts) => pages.push([path, page({ siteUrl, path, ...opts })]);
-const abs = (path) => (siteUrl !== '/' ? siteUrl + path : path);
+const abs = (path) => (siteUrl !== '/' ? siteUrl + cleanPath(path) : cleanPath(path));
 const article = (headline, description, path) => ({
   '@context': 'https://schema.org',
   '@type': 'TechArticle',
@@ -63,7 +63,7 @@ const crumbs = (...items) => ({
 
 /** An index + detail pages for a section whose entries are { slug, title, summary, body }. */
 function section({ dir, label, heading, title, lead, items, closing = '' }) {
-  const href = (i) => `${i.slug}.html`;
+  const href = (i) => i.slug;
   const railFor = (current) =>
     rail({ label, heading, indexHref: './', items: items.map((i) => ({ href: href(i), title: i.title, key: i.slug })), current });
   add(`${dir}/index.html`, {
@@ -155,8 +155,8 @@ add('index.html', {
   <div>
     <p class="eyebrow">Logisim AI Circuit Coach &amp; Signal Prover</p>
     <h2>Ask "why?" about any wire, and watch the proof unfold.</h2>
-    <p class="lead">Select a wire, <a href="components/pin.html">Input/Output Pin</a>, flip-flop, or gate and ask why it has its value. The symbolic AI Coach traces the upstream drivers behind it and highlights the exact cause.</p>
-    <p><a class="btn" href="manual/ai-coach.html">How the AI Coach works →</a></p>
+    <p class="lead">Select a wire, <a href="components/pin">Input/Output Pin</a>, flip-flop, or gate and ask why it has its value. The symbolic AI Coach traces the upstream drivers behind it and highlights the exact cause.</p>
+    <p><a class="btn" href="manual/ai-coach">How the AI Coach works →</a></p>
   </div>
   <div class="coach-quote">
     <div class="mono"><strong>1. Where to look</strong> → <strong>2. The pattern</strong> → <strong>3. The logic</strong> → <strong>4. Conclusion</strong></div>
@@ -169,18 +169,18 @@ add('index.html', {
   <article><p class="eyebrow">Compatible</p><h2>.circ import and export</h2><p>Open classic Logisim 2.7.1 files in the browser, and save back for the original program.</p></article>
   <article><p class="eyebrow">Practice</p><h2>Daily challenges</h2><p>A new design or troubleshooting puzzle every day, with shareable results.</p></article>
 </section>
-<section class="learnhome"><p>Popular references: <a href="components/7-segment-display.html">7-Segment Display Pins</a> · <a href="components/s-r-flip-flop.html">S-R Flip-Flop</a> · <a href="components/t-flip-flop.html">T Flip-Flop</a> · <a href="components/xor-gate.html">XOR Logic Gate</a> · <a href="components/pin.html">Input Pin</a> · <a href="components/tunnel.html">Tunnel</a>. Looking for a Java-free Logisim? See <a href="learn/logisim-online-no-java.html">Logisim Online (No Java)</a>.</p></section>
+<section class="learnhome"><p>Popular references: <a href="components/7-segment-display">7-Segment Display Pins</a> · <a href="components/s-r-flip-flop">S-R Flip-Flop</a> · <a href="components/t-flip-flop">T Flip-Flop</a> · <a href="components/xor-gate">XOR Logic Gate</a> · <a href="components/pin">Input Pin</a> · <a href="components/tunnel">Tunnel</a>. Looking for a Java-free Logisim? See <a href="learn/logisim-online-no-java">Logisim Online (No Java)</a>.</p></section>
 <section class="trust"><p>Runs entirely in your browser. Works offline once installed.</p></section>`,
 });
 
 // ---- circuits
-const circuitLink = (t) => ({ href: `${t.slug}.html`, title: t.name, summary: t.summary, band: t.level });
+const circuitLink = (t) => ({ href: t.slug, title: t.name, summary: t.summary, band: t.level });
 const circuitRail = (current) =>
   rail({
     label: 'Circuit',
     heading: 'Circuits',
     indexHref: './',
-    items: ORDERED.map((t) => ({ href: `${t.slug}.html`, title: t.name, key: t.slug })),
+    items: ORDERED.map((t) => ({ href: t.slug, title: t.name, key: t.slug })),
     current,
   });
 add('circuits/index.html', {
@@ -230,8 +230,8 @@ ${truthTableHtml(t.example, tt)}
 </div>
 </div>
 <nav class="pager">
-${prev ? `<a href="${prev.slug}.html"><small>Previous</small>← ${esc(prev.name)}</a>` : '<span></span>'}
-${next ? `<a href="${next.slug}.html"><small>Next</small>${esc(next.name)} →</a>` : '<span></span>'}
+${prev ? `<a href="${prev.slug}"><small>Previous</small>← ${esc(prev.name)}</a>` : '<span></span>'}
+${next ? `<a href="${next.slug}"><small>Next</small>${esc(next.name)} →</a>` : '<span></span>'}
 </nav>
 </article>
 </div>`,
@@ -265,7 +265,7 @@ const compRail = (current) =>
     label: 'Component',
     heading: 'Components',
     indexHref: './',
-    items: COMP_ITEMS.map((c) => ({ href: `${c.slug}.html`, title: c.shortName, key: c.slug })),
+    items: COMP_ITEMS.map((c) => ({ href: c.slug, title: c.shortName, key: c.slug })),
     current,
   });
 
@@ -296,7 +296,7 @@ add('components/index.html', {
 <p class="lead">${COMP_ITEMS.length} components in ${COMPONENT_CATEGORIES.length} libraries, matching the Logisim 2.7.1 libraries.</p>
 ${COMPONENT_CATEGORIES.map(
   (cat) => `<section class="group"><h2>${esc(cat)}</h2>${cards(
-    COMP_ITEMS.filter((c) => c.category === cat).map((c) => ({ href: `${c.slug}.html`, title: c.shortName, summary: c.desc, band: c.category })),
+    COMP_ITEMS.filter((c) => c.category === cat).map((c) => ({ href: c.slug, title: c.shortName, summary: c.desc, band: c.category })),
   )}</section>`,
 ).join('\n')}
 </div></div>`,
@@ -338,8 +338,8 @@ ${
     : ''
 }
 <nav class="pager">
-${prev ? `<a href="${prev.slug}.html"><small>Previous</small>← ${esc(prev.shortName)}</a>` : '<span></span>'}
-${next ? `<a href="${next.slug}.html"><small>Next</small>${esc(next.shortName)} →</a>` : '<span></span>'}
+${prev ? `<a href="${prev.slug}"><small>Previous</small>← ${esc(prev.shortName)}</a>` : '<span></span>'}
+${next ? `<a href="${next.slug}"><small>Next</small>${esc(next.shortName)} →</a>` : '<span></span>'}
 </nav>
 </article>
 </div>`,
@@ -410,7 +410,7 @@ writeFileSync(join(out, '_redirects'), '');
 
 const gated = Boolean(process.env.SITE_PASSWORD);
 if (!gated && siteUrl !== '/') {
-  const urls = pages.map(([p]) => p).filter((p) => p !== '404.html').map((p) => siteUrl + p.replace(/index\.html$/, ''));
+  const urls = pages.map(([p]) => p).filter((p) => p !== '404.html').map((p) => siteUrl + cleanPath(p));
   if (existsSync(appDist)) urls.push(siteUrl + 'play/');
   writeFileSync(
     join(out, 'sitemap.xml'),

@@ -33,11 +33,11 @@ export const COMPONENTS = [
     },
     tip: 'If clicking an Input Pin moves it instead of toggling 0 and 1, switch from the Select tool to the Poke tool in the top toolbar.',
     related: [
-      { href: 'probe.html', label: 'Output Pin / Probe' },
-      { href: 'button.html', label: 'Button (momentary input)' },
-      { href: 'constant.html', label: 'Constant' },
-      { href: 'splitter.html', label: 'Splitter (multi-bit buses)' },
-      { href: '../manual/introduction.html', label: 'Getting started with the Poke tool' },
+      { href: 'probe', label: 'Output Pin / Probe' },
+      { href: 'button', label: 'Button (momentary input)' },
+      { href: 'constant', label: 'Constant' },
+      { href: 'splitter', label: 'Splitter (multi-bit buses)' },
+      { href: '../manual/introduction', label: 'Getting started with the Poke tool' },
     ],
   },
   {
@@ -68,10 +68,10 @@ export const COMPONENTS = [
     },
     tip: 'Place a Probe on any wire and click "Why?" in the AI Coach drawer to trace every upstream driver behind its current value.',
     related: [
-      { href: 'pin.html', label: 'Input Pin & Output Pin' },
-      { href: 'led.html', label: 'LED indicator' },
-      { href: '../circuits/short-circuit-demo.html', label: 'Short-circuit (E) diagnosis guide' },
-      { href: '../manual/ai-coach.html', label: 'AI Circuit Coach & Signal Prover' },
+      { href: 'pin', label: 'Input Pin & Output Pin' },
+      { href: 'led', label: 'LED indicator' },
+      { href: '../circuits/short-circuit-demo', label: 'Short-circuit (E) diagnosis guide' },
+      { href: '../manual/ai-coach', label: 'AI Circuit Coach & Signal Prover' },
     ],
   },
   {
@@ -101,10 +101,10 @@ export const COMPONENTS = [
     },
     tip: 'Use Tunnels for global signals like CLK, RST, and multi-bit address buses so your combinational logic stays readable without wire clutter.',
     related: [
-      { href: 'splitter.html', label: 'Splitter' },
-      { href: 'pin.html', label: 'Input Pin & Output Pin' },
-      { href: 'controlled-buffer.html', label: 'Tri-State Buffer (shared bus driving)' },
-      { href: '../circuits/short-circuit-demo.html', label: 'Fixing red E wire conflicts' },
+      { href: 'splitter', label: 'Splitter' },
+      { href: 'pin', label: 'Input Pin & Output Pin' },
+      { href: 'controlled-buffer', label: 'Tri-State Buffer (shared bus driving)' },
+      { href: '../circuits/short-circuit-demo', label: 'Fixing red E wire conflicts' },
     ],
   },
   {
@@ -136,10 +136,10 @@ export const COMPONENTS = [
     },
     tip: 'Always check which branch is bit0 (LSB) versus the most significant bit before wiring a Splitter to an Adder or Hex Digit Display.',
     related: [
-      { href: 'pin.html', label: 'Multi-bit Input & Output Pins' },
-      { href: 'hex-digit-display.html', label: 'Hex Digit Display' },
-      { href: 'tunnel.html', label: 'Tunnel' },
-      { href: '../circuits/4-bit-alu.html', label: '4-Bit ALU circuit guide' },
+      { href: 'pin', label: 'Multi-bit Input & Output Pins' },
+      { href: 'hex-digit-display', label: 'Hex Digit Display' },
+      { href: 'tunnel', label: 'Tunnel' },
+      { href: '../circuits/4-bit-alu', label: '4-Bit ALU circuit guide' },
     ],
   },
   {
@@ -169,10 +169,10 @@ export const COMPONENTS = [
     },
     tip: 'When debugging a sequential circuit, step the Clock manually with the Poke tool so you can watch each rising edge (0 → 1) update Q one cycle at a time.',
     related: [
-      { href: 'd-flip-flop.html', label: 'D Flip-Flop' },
-      { href: 't-flip-flop.html', label: 'T Flip-Flop' },
-      { href: 'counter.html', label: 'Counter' },
-      { href: 'register.html', label: 'Register' },
+      { href: 'd-flip-flop', label: 'D Flip-Flop' },
+      { href: 't-flip-flop', label: 'T Flip-Flop' },
+      { href: 'counter', label: 'Counter' },
+      { href: 'register', label: 'Register' },
     ],
   },
   {
@@ -192,9 +192,9 @@ export const COMPONENTS = [
     ],
     tip: 'Tie the T input of a T Flip-Flop to a Constant 1 to make it toggle on every rising clock edge.',
     related: [
-      { href: 'power.html', label: 'Power (1)' },
-      { href: 'ground.html', label: 'Ground (0)' },
-      { href: 'pin.html', label: 'Input Pin' },
+      { href: 'power', label: 'Power (1)' },
+      { href: 'ground', label: 'Ground (0)' },
+      { href: 'pin', label: 'Input Pin' },
     ],
   },
   {
@@ -214,9 +214,9 @@ export const COMPONENTS = [
     ],
     tip: 'Use Power to permanently enable a Register (EN=1) or force a J-K or T Flip-Flop into toggle mode.',
     related: [
-      { href: 'ground.html', label: 'Ground (0)' },
-      { href: 'constant.html', label: 'Constant' },
-      { href: '../circuits/short-circuit-demo.html', label: 'Short-circuit demo' },
+      { href: 'ground', label: 'Ground (0)' },
+      { href: 'constant', label: 'Constant' },
+      { href: '../circuits/short-circuit-demo', label: 'Short-circuit demo' },
     ],
   },
   {
@@ -236,9 +236,9 @@ export const COMPONENTS = [
     ],
     tip: 'Tie unused flip-flop RST pins and Adder cin pins to Ground so their state is explicitly 0.',
     related: [
-      { href: 'power.html', label: 'Power (1)' },
-      { href: 'constant.html', label: 'Constant' },
-      { href: 'adder.html', label: 'Adder' },
+      { href: 'power', label: 'Power (1)' },
+      { href: 'constant', label: 'Constant' },
+      { href: 'adder', label: 'Adder' },
     ],
   },
 
@@ -260,9 +260,9 @@ export const COMPONENTS = [
     ],
     tip: 'Wire a Button to the RST pin of your Counters and Registers so you can reset the entire sequential circuit with a single click.',
     related: [
-      { href: 'pin.html', label: 'Input Pin & Output Pin' },
-      { href: 'clock.html', label: 'Clock' },
-      { href: 'led.html', label: 'LED' },
+      { href: 'pin', label: 'Input Pin & Output Pin' },
+      { href: 'clock', label: 'Clock' },
+      { href: 'led', label: 'LED' },
     ],
   },
   {
@@ -291,9 +291,9 @@ export const COMPONENTS = [
     },
     tip: 'Use an LED when you want a visual status light on a 1-bit output, or use a Probe when you want to see exact 0, 1, Z, and E characters.',
     related: [
-      { href: 'probe.html', label: 'Output Pin / Probe' },
-      { href: '7-segment-display.html', label: '7-Segment Display' },
-      { href: 'hex-digit-display.html', label: 'Hex Digit Display' },
+      { href: 'probe', label: 'Output Pin / Probe' },
+      { href: '7-segment-display', label: '7-Segment Display' },
+      { href: 'hex-digit-display', label: 'Hex Digit Display' },
     ],
   },
   {
@@ -338,10 +338,10 @@ export const COMPONENTS = [
     },
     tip: 'Remember the top row order (g, f, a, b) and bottom row order (e, d, c, dp)—the top-left pin is segment g (middle bar), not segment a!',
     related: [
-      { href: '../circuits/7-segment-decoder.html', label: '7-Segment Decoder circuit guide' },
-      { href: 'hex-digit-display.html', label: 'Hex Digit Display (built-in 4-bit decoder)' },
-      { href: 'rom.html', label: 'ROM lookup table' },
-      { href: 'splitter.html', label: 'Splitter' },
+      { href: '../circuits/7-segment-decoder', label: '7-Segment Decoder circuit guide' },
+      { href: 'hex-digit-display', label: 'Hex Digit Display (built-in 4-bit decoder)' },
+      { href: 'rom', label: 'ROM lookup table' },
+      { href: 'splitter', label: 'Splitter' },
     ],
   },
   {
@@ -375,10 +375,10 @@ export const COMPONENTS = [
     },
     tip: 'Connect the 4-bit Q output of a Counter or Register directly to the bottom-left Hex pin to watch your circuit count from 0 to F.',
     related: [
-      { href: '7-segment-display.html', label: '7-Segment Display (individual segment pins)' },
-      { href: '../circuits/7-segment-decoder.html', label: 'Counter + Hex Display guide' },
-      { href: 'counter.html', label: 'Counter' },
-      { href: 'splitter.html', label: 'Splitter' },
+      { href: '7-segment-display', label: '7-Segment Display (individual segment pins)' },
+      { href: '../circuits/7-segment-decoder', label: 'Counter + Hex Display guide' },
+      { href: 'counter', label: 'Counter' },
+      { href: 'splitter', label: 'Splitter' },
     ],
   },
 
@@ -411,10 +411,10 @@ export const COMPONENTS = [
     },
     tip: 'Combine a NOT Gate with an Adder (setting cin = 1) to subtract in two\'s complement: A - B = A + (~B) + 1.',
     related: [
-      { href: 'buffer.html', label: 'Buffer' },
-      { href: 'controlled-inverter.html', label: 'Controlled Inverter (Tri-State NOT)' },
-      { href: 'nand-gate.html', label: 'NAND Gate' },
-      { href: 'negator.html', label: 'Negator (two\'s complement)' },
+      { href: 'buffer', label: 'Buffer' },
+      { href: 'controlled-inverter', label: 'Controlled Inverter (Tri-State NOT)' },
+      { href: 'nand-gate', label: 'NAND Gate' },
+      { href: 'negator', label: 'Negator (two\'s complement)' },
     ],
   },
   {
@@ -445,8 +445,8 @@ export const COMPONENTS = [
     },
     tip: 'If you want to connect multiple outputs to a shared bus wire, use a Controlled Buffer (Tri-State Buffer) rather than a plain Buffer.',
     related: [
-      { href: 'controlled-buffer.html', label: 'Controlled Buffer (Tri-State)' },
-      { href: 'not-gate.html', label: 'NOT Gate' },
+      { href: 'controlled-buffer', label: 'Controlled Buffer (Tri-State)' },
+      { href: 'not-gate', label: 'NOT Gate' },
     ],
   },
   {
@@ -479,10 +479,10 @@ export const COMPONENTS = [
     },
     tip: 'Pair Controlled Buffers with a Decoder on their Enable pins to guarantee that only one device drives a shared CPU data bus at a time.',
     related: [
-      { href: 'controlled-inverter.html', label: 'Controlled Inverter (Tri-State NOT)' },
-      { href: 'decoder.html', label: 'Decoder' },
-      { href: 'multiplexer.html', label: 'Multiplexer' },
-      { href: '../circuits/short-circuit-demo.html', label: 'Preventing bus contention (E)' },
+      { href: 'controlled-inverter', label: 'Controlled Inverter (Tri-State NOT)' },
+      { href: 'decoder', label: 'Decoder' },
+      { href: 'multiplexer', label: 'Multiplexer' },
+      { href: '../circuits/short-circuit-demo', label: 'Preventing bus contention (E)' },
     ],
   },
   {
@@ -514,8 +514,8 @@ export const COMPONENTS = [
     },
     tip: 'Always connect the bottom Enable pin (en) to a defined 0 or 1 signal; a floating Enable pin causes a Controlled Inverter to output E.',
     related: [
-      { href: 'controlled-buffer.html', label: 'Controlled Buffer (Tri-State)' },
-      { href: 'not-gate.html', label: 'NOT Gate' },
+      { href: 'controlled-buffer', label: 'Controlled Buffer (Tri-State)' },
+      { href: 'not-gate', label: 'NOT Gate' },
     ],
   },
   {
@@ -548,11 +548,11 @@ export const COMPONENTS = [
     },
     tip: 'AND gates form the product terms in Sum-of-Products (SOP) circuits synthesized from Karnaugh maps and compute the Carry output in a Half Adder.',
     related: [
-      { href: 'nand-gate.html', label: 'NAND Gate' },
-      { href: 'or-gate.html', label: 'OR Gate' },
-      { href: 'xor-gate.html', label: 'XOR Gate' },
-      { href: '../circuits/half-adder.html', label: 'Half Adder circuit guide' },
-      { href: '../circuits/k-map-solver.html', label: 'K-Map Majority Voter guide' },
+      { href: 'nand-gate', label: 'NAND Gate' },
+      { href: 'or-gate', label: 'OR Gate' },
+      { href: 'xor-gate', label: 'XOR Gate' },
+      { href: '../circuits/half-adder', label: 'Half Adder circuit guide' },
+      { href: '../circuits/k-map-solver', label: 'K-Map Majority Voter guide' },
     ],
   },
   {
@@ -585,10 +585,10 @@ export const COMPONENTS = [
     },
     tip: 'Never tie two gate outputs directly together to perform an OR—doing so causes a red E short circuit when one is 0 and the other is 1. Always combine them through an OR Gate.',
     related: [
-      { href: 'nor-gate.html', label: 'NOR Gate' },
-      { href: 'and-gate.html', label: 'AND Gate' },
-      { href: 'xor-gate.html', label: 'XOR Gate' },
-      { href: '../circuits/full-adder.html', label: 'Full Adder circuit guide' },
+      { href: 'nor-gate', label: 'NOR Gate' },
+      { href: 'and-gate', label: 'AND Gate' },
+      { href: 'xor-gate', label: 'XOR Gate' },
+      { href: '../circuits/full-adder', label: 'Full Adder circuit guide' },
     ],
   },
   {
@@ -619,10 +619,10 @@ export const COMPONENTS = [
     },
     tip: 'By De Morgan\'s law, a two-level AND-OR Sum-of-Products circuit converts directly into a two-level NAND-NAND circuit with identical logic.',
     related: [
-      { href: 'and-gate.html', label: 'AND Gate' },
-      { href: 'nor-gate.html', label: 'NOR Gate' },
-      { href: 'not-gate.html', label: 'NOT Gate' },
-      { href: '../learn/how-digital-works.html', label: 'How Digital Logic Works' },
+      { href: 'and-gate', label: 'AND Gate' },
+      { href: 'nor-gate', label: 'NOR Gate' },
+      { href: 'not-gate', label: 'NOT Gate' },
+      { href: '../learn/how-digital-works', label: 'How Digital Logic Works' },
     ],
   },
   {
@@ -653,10 +653,10 @@ export const COMPONENTS = [
     },
     tip: 'A multi-input NOR gate is the cleanest way to build a Zero flag detector for an ALU: its output is 1 only when every bit of the result is 0.',
     related: [
-      { href: 'or-gate.html', label: 'OR Gate' },
-      { href: 'nand-gate.html', label: 'NAND Gate' },
-      { href: 's-r-flip-flop.html', label: 'S-R Flip-Flop' },
-      { href: '../circuits/4-bit-alu.html', label: '4-Bit ALU circuit guide' },
+      { href: 'or-gate', label: 'OR Gate' },
+      { href: 'nand-gate', label: 'NAND Gate' },
+      { href: 's-r-flip-flop', label: 'S-R Flip-Flop' },
+      { href: '../circuits/4-bit-alu', label: '4-Bit ALU circuit guide' },
     ],
   },
   {
@@ -690,12 +690,12 @@ export const COMPONENTS = [
     },
     tip: 'Use an XOR gate as a controlled inverter: wire your signal to one input and an Invert control line to the other (when Control=0 the signal passes unchanged; when Control=1 it is inverted).',
     related: [
-      { href: '../circuits/xor-parity.html', label: 'XOR Gate & 3-Bit Odd Parity circuit guide' },
-      { href: '../circuits/half-adder.html', label: 'Half Adder circuit guide' },
-      { href: '../circuits/full-adder.html', label: 'Full Adder circuit guide' },
-      { href: 'xnor-gate.html', label: 'XNOR Gate (Equivalence)' },
-      { href: 'odd-parity.html', label: 'Odd Parity Gate' },
-      { href: 'adder.html', label: 'Adder component' },
+      { href: '../circuits/xor-parity', label: 'XOR Gate & 3-Bit Odd Parity circuit guide' },
+      { href: '../circuits/half-adder', label: 'Half Adder circuit guide' },
+      { href: '../circuits/full-adder', label: 'Full Adder circuit guide' },
+      { href: 'xnor-gate', label: 'XNOR Gate (Equivalence)' },
+      { href: 'odd-parity', label: 'Odd Parity Gate' },
+      { href: 'adder', label: 'Adder component' },
     ],
   },
   {
@@ -726,9 +726,9 @@ export const COMPONENTS = [
     },
     tip: 'Combine four 2-input XNOR gates with a 4-input AND gate to build a fast 4-bit equality detector (A = B).',
     related: [
-      { href: 'xor-gate.html', label: 'XOR Gate' },
-      { href: 'even-parity.html', label: 'Even Parity Gate' },
-      { href: 'comparator.html', label: 'Comparator component' },
+      { href: 'xor-gate', label: 'XOR Gate' },
+      { href: 'even-parity', label: 'Even Parity Gate' },
+      { href: 'comparator', label: 'Comparator component' },
     ],
   },
   {
@@ -759,8 +759,8 @@ export const COMPONENTS = [
     },
     tip: 'Attach an Odd Parity gate across data bits to generate an even-parity check bit (if the data already has an odd number of 1s, the parity bit becomes 1 so the total count of 1s transmitted is even).',
     related: [
-      { href: 'even-parity.html', label: 'Even Parity Gate' },
-      { href: 'xor-gate.html', label: 'XOR Gate' },
+      { href: 'even-parity', label: 'Even Parity Gate' },
+      { href: 'xor-gate', label: 'XOR Gate' },
     ],
   },
   {
@@ -791,8 +791,8 @@ export const COMPONENTS = [
     },
     tip: 'Use an Even Parity gate at the receiver end of a communication link to verify that the data bits plus the parity bit contain an even number of 1s.',
     related: [
-      { href: 'odd-parity.html', label: 'Odd Parity Gate' },
-      { href: 'xnor-gate.html', label: 'XNOR Gate' },
+      { href: 'odd-parity', label: 'Odd Parity Gate' },
+      { href: 'xnor-gate', label: 'XNOR Gate' },
     ],
   },
 
@@ -826,10 +826,10 @@ export const COMPONENTS = [
     },
     tip: 'In our 4-Bit ALU circuit, a 4-to-1 Multiplexer (selectBits = 2) selects between ADD, SUB, AND, and OR results using a 2-bit opcode on S.',
     related: [
-      { href: '../circuits/multiplexer.html', label: '2-to-1 Multiplexer circuit guide' },
-      { href: '../circuits/4-bit-alu.html', label: '4-Bit ALU circuit guide' },
-      { href: 'demultiplexer.html', label: 'Demultiplexer (DEMUX)' },
-      { href: 'decoder.html', label: 'Decoder' },
+      { href: '../circuits/multiplexer', label: '2-to-1 Multiplexer circuit guide' },
+      { href: '../circuits/4-bit-alu', label: '4-Bit ALU circuit guide' },
+      { href: 'demultiplexer', label: 'Demultiplexer (DEMUX)' },
+      { href: 'decoder', label: 'Decoder' },
     ],
   },
   {
@@ -860,8 +860,8 @@ export const COMPONENTS = [
     },
     tip: 'Tying the data input D of a 1-bit Demultiplexer to a Constant 1 makes it behave identically to a one-hot Decoder.',
     related: [
-      { href: 'multiplexer.html', label: 'Multiplexer (MUX)' },
-      { href: 'decoder.html', label: 'Decoder' },
+      { href: 'multiplexer', label: 'Multiplexer (MUX)' },
+      { href: 'decoder', label: 'Decoder' },
     ],
   },
   {
@@ -892,10 +892,10 @@ export const COMPONENTS = [
     },
     tip: 'Use a 2-to-4 or 3-to-8 Decoder with a Splitter to select which Register or ROM bank is active for a given memory address.',
     related: [
-      { href: 'multiplexer.html', label: 'Multiplexer (MUX)' },
-      { href: 'demultiplexer.html', label: 'Demultiplexer (DEMUX)' },
-      { href: 'priority-encoder.html', label: 'Priority Encoder' },
-      { href: 'controlled-buffer.html', label: 'Controlled Buffer' },
+      { href: 'multiplexer', label: 'Multiplexer (MUX)' },
+      { href: 'demultiplexer', label: 'Demultiplexer (DEMUX)' },
+      { href: 'priority-encoder', label: 'Priority Encoder' },
+      { href: 'controlled-buffer', label: 'Controlled Buffer' },
     ],
   },
   {
@@ -928,8 +928,8 @@ export const COMPONENTS = [
     },
     tip: 'Always check the GS (Group Signal) output pin to distinguish between input D0 being active (Q = 0, GS = 1) and no inputs being active (Q = Z, GS = 0).',
     related: [
-      { href: 'decoder.html', label: 'Decoder' },
-      { href: 'multiplexer.html', label: 'Multiplexer (MUX)' },
+      { href: 'decoder', label: 'Decoder' },
+      { href: 'multiplexer', label: 'Multiplexer (MUX)' },
     ],
   },
 
@@ -966,10 +966,10 @@ export const COMPONENTS = [
     },
     tip: 'Leaving cin unconnected automatically defaults Carry-In to 0; tie cin to 1 and invert B with a NOT gate if you want to compute A - B using an Adder.',
     related: [
-      { href: '../circuits/half-adder.html', label: 'Half Adder circuit guide' },
-      { href: '../circuits/full-adder.html', label: 'Full Adder circuit guide' },
-      { href: '../circuits/4-bit-alu.html', label: '4-Bit ALU circuit guide' },
-      { href: 'subtractor.html', label: 'Subtractor' },
+      { href: '../circuits/half-adder', label: 'Half Adder circuit guide' },
+      { href: '../circuits/full-adder', label: 'Full Adder circuit guide' },
+      { href: '../circuits/4-bit-alu', label: '4-Bit ALU circuit guide' },
+      { href: 'subtractor', label: 'Subtractor' },
     ],
   },
   {
@@ -1003,10 +1003,10 @@ export const COMPONENTS = [
     },
     tip: 'In an ALU, you can either use a dedicated Subtractor component or share a single Adder by multiplexing B with ~B and setting cin = 1.',
     related: [
-      { href: 'adder.html', label: 'Adder' },
-      { href: 'negator.html', label: 'Negator (-A)' },
-      { href: 'comparator.html', label: 'Comparator' },
-      { href: '../circuits/4-bit-alu.html', label: '4-Bit ALU circuit guide' },
+      { href: 'adder', label: 'Adder' },
+      { href: 'negator', label: 'Negator (-A)' },
+      { href: 'comparator', label: 'Comparator' },
+      { href: '../circuits/4-bit-alu', label: '4-Bit ALU circuit guide' },
     ],
   },
   {
@@ -1028,8 +1028,8 @@ export const COMPONENTS = [
     ],
     tip: 'If your product can exceed 4 bits (for example, 5 × 5 = 25 = 0x19), increase the Data Bits (width) attribute of the Multiplier and its input/output buses to 8 bits.',
     related: [
-      { href: 'adder.html', label: 'Adder' },
-      { href: 'shifter.html', label: 'Shifter' },
+      { href: 'adder', label: 'Adder' },
+      { href: 'shifter', label: 'Shifter' },
     ],
   },
   {
@@ -1063,9 +1063,9 @@ export const COMPONENTS = [
     },
     tip: 'Note that the Comparator uses signed two\'s complement ordering (for 4-bit inputs, 0b1111 is -1, which is less than 0b0001 = +1).',
     related: [
-      { href: 'subtractor.html', label: 'Subtractor' },
-      { href: 'xnor-gate.html', label: 'XNOR Gate (1-bit equality)' },
-      { href: '../circuits/4-bit-alu.html', label: '4-Bit ALU circuit guide' },
+      { href: 'subtractor', label: 'Subtractor' },
+      { href: 'xnor-gate', label: 'XNOR Gate (1-bit equality)' },
+      { href: '../circuits/4-bit-alu', label: '4-Bit ALU circuit guide' },
     ],
   },
   {
@@ -1096,9 +1096,9 @@ export const COMPONENTS = [
     },
     tip: 'Use a Negator instead of a NOT Gate when you need true arithmetic negation (-A = ~A + 1) rather than bitwise ones\' complement (~A).',
     related: [
-      { href: 'not-gate.html', label: 'NOT Gate (bitwise ~A)' },
-      { href: 'subtractor.html', label: 'Subtractor' },
-      { href: 'adder.html', label: 'Adder' },
+      { href: 'not-gate', label: 'NOT Gate (bitwise ~A)' },
+      { href: 'subtractor', label: 'Subtractor' },
+      { href: 'adder', label: 'Adder' },
     ],
   },
   {
@@ -1129,8 +1129,8 @@ export const COMPONENTS = [
     },
     tip: 'Note that the shift distance pin (sh) has a smaller bit width than A (for a 4-bit Shifter, sh is a 2-bit pin accepting distances 0 to 3).',
     related: [
-      { href: 'multiplier.html', label: 'Multiplier' },
-      { href: 'adder.html', label: 'Adder' },
+      { href: 'multiplier', label: 'Multiplier' },
+      { href: 'adder', label: 'Adder' },
     ],
   },
 
@@ -1166,11 +1166,11 @@ export const COMPONENTS = [
     },
     tip: 'Wire ~Q back to D to make a D Flip-Flop toggle its state on every rising clock edge, or chain several D Flip-Flops in series (Q into the next D) to build a shift register.',
     related: [
-      { href: '../circuits/d-flip-flop.html', label: 'Interactive D Flip-Flop circuit guide' },
-      { href: 't-flip-flop.html', label: 'T Flip-Flop' },
-      { href: 'j-k-flip-flop.html', label: 'J-K Flip-Flop' },
-      { href: 's-r-flip-flop.html', label: 'S-R Flip-Flop' },
-      { href: 'register.html', label: 'Register (multi-bit D flip-flop)' },
+      { href: '../circuits/d-flip-flop', label: 'Interactive D Flip-Flop circuit guide' },
+      { href: 't-flip-flop', label: 'T Flip-Flop' },
+      { href: 'j-k-flip-flop', label: 'J-K Flip-Flop' },
+      { href: 's-r-flip-flop', label: 'S-R Flip-Flop' },
+      { href: 'register', label: 'Register (multi-bit D flip-flop)' },
     ],
   },
   {
@@ -1206,12 +1206,12 @@ export const COMPONENTS = [
     },
     tip: 'To build a divide-by-2 frequency divider or binary counter stage in Logisim, tie the T input to a Constant 1 (or Power) and feed your clock pulse into CLK.',
     related: [
-      { href: '../circuits/t-flip-flop.html', label: 'T Flip-Flop Frequency Divider circuit guide' },
-      { href: 'j-k-flip-flop.html', label: 'J-K Flip-Flop (J=K=1 toggles)' },
-      { href: 'd-flip-flop.html', label: 'D Flip-Flop' },
-      { href: 's-r-flip-flop.html', label: 'S-R Flip-Flop' },
-      { href: 'counter.html', label: 'Counter component' },
-      { href: '../circuits/jk-flip-flop.html', label: 'Flip-Flop circuit guide' },
+      { href: '../circuits/t-flip-flop', label: 'T Flip-Flop Frequency Divider circuit guide' },
+      { href: 'j-k-flip-flop', label: 'J-K Flip-Flop (J=K=1 toggles)' },
+      { href: 'd-flip-flop', label: 'D Flip-Flop' },
+      { href: 's-r-flip-flop', label: 'S-R Flip-Flop' },
+      { href: 'counter', label: 'Counter component' },
+      { href: '../circuits/jk-flip-flop', label: 'Flip-Flop circuit guide' },
     ],
   },
   {
@@ -1246,10 +1246,10 @@ export const COMPONENTS = [
     },
     tip: 'Tie J and K together to form a T Flip-Flop, or feed K from J through a NOT gate to form a D Flip-Flop.',
     related: [
-      { href: '../circuits/jk-flip-flop.html', label: 'Interactive J-K Flip-Flop circuit guide' },
-      { href: 's-r-flip-flop.html', label: 'S-R Flip-Flop' },
-      { href: 't-flip-flop.html', label: 'T Flip-Flop' },
-      { href: 'd-flip-flop.html', label: 'D Flip-Flop' },
+      { href: '../circuits/jk-flip-flop', label: 'Interactive J-K Flip-Flop circuit guide' },
+      { href: 's-r-flip-flop', label: 'S-R Flip-Flop' },
+      { href: 't-flip-flop', label: 'T Flip-Flop' },
+      { href: 'd-flip-flop', label: 'D Flip-Flop' },
     ],
   },
   {
@@ -1287,12 +1287,12 @@ export const COMPONENTS = [
     },
     tip: 'If your state machine ever needs both inputs High (1, 1) to toggle the output, replace the S-R Flip-Flop with a J-K Flip-Flop—their pin locations are identical so your existing wires will snap right in.',
     related: [
-      { href: '../circuits/sr-latch.html', label: 'Interactive S-R Flip-Flop circuit guide' },
-      { href: '../circuits/jk-flip-flop.html', label: 'J-K Flip-Flop interactive circuit guide' },
-      { href: 'j-k-flip-flop.html', label: 'J-K Flip-Flop component' },
-      { href: 'd-flip-flop.html', label: 'D Flip-Flop component' },
-      { href: 't-flip-flop.html', label: 'T Flip-Flop component' },
-      { href: 'clock.html', label: 'Clock' },
+      { href: '../circuits/sr-latch', label: 'Interactive S-R Flip-Flop circuit guide' },
+      { href: '../circuits/jk-flip-flop', label: 'J-K Flip-Flop interactive circuit guide' },
+      { href: 'j-k-flip-flop', label: 'J-K Flip-Flop component' },
+      { href: 'd-flip-flop', label: 'D Flip-Flop component' },
+      { href: 't-flip-flop', label: 'T Flip-Flop component' },
+      { href: 'clock', label: 'Clock' },
     ],
   },
   {
@@ -1326,10 +1326,10 @@ export const COMPONENTS = [
     },
     tip: 'Wire a Register’s Q output into one input of an Adder and route the Adder’s Sum back to D to build an accumulator register.',
     related: [
-      { href: 'd-flip-flop.html', label: 'D Flip-Flop' },
-      { href: 'counter.html', label: 'Counter' },
-      { href: 'clock.html', label: 'Clock' },
-      { href: 'hex-digit-display.html', label: 'Hex Digit Display' },
+      { href: 'd-flip-flop', label: 'D Flip-Flop' },
+      { href: 'counter', label: 'Counter' },
+      { href: 'clock', label: 'Clock' },
+      { href: 'hex-digit-display', label: 'Hex Digit Display' },
     ],
   },
   {
@@ -1362,10 +1362,10 @@ export const COMPONENTS = [
     },
     tip: 'Connect a Counter’s Q bus to the address input (A) of a ROM to step automatically through a sequence of microcode instructions or display patterns.',
     related: [
-      { href: '../circuits/7-segment-decoder.html', label: 'Counter + Hex Display circuit guide' },
-      { href: 'register.html', label: 'Register' },
-      { href: 't-flip-flop.html', label: 'T Flip-Flop' },
-      { href: 'rom.html', label: 'ROM' },
+      { href: '../circuits/7-segment-decoder', label: 'Counter + Hex Display circuit guide' },
+      { href: 'register', label: 'Register' },
+      { href: 't-flip-flop', label: 'T Flip-Flop' },
+      { href: 'rom', label: 'ROM' },
     ],
   },
   {
@@ -1397,10 +1397,10 @@ export const COMPONENTS = [
     },
     tip: 'To drive a 7-Segment Display from a 4-bit binary number without building Karnaugh-map gates, set a ROM to width = 7 (or 8) and store the 7-segment bit patterns in its hex Value list, then unpack D with a Splitter.',
     related: [
-      { href: 'counter.html', label: 'Counter' },
-      { href: '7-segment-display.html', label: '7-Segment Display' },
-      { href: 'splitter.html', label: 'Splitter' },
-      { href: 'decoder.html', label: 'Decoder' },
+      { href: 'counter', label: 'Counter' },
+      { href: '7-segment-display', label: '7-Segment Display' },
+      { href: 'splitter', label: 'Splitter' },
+      { href: 'decoder', label: 'Decoder' },
     ],
   },
 ];
