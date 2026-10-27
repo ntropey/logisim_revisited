@@ -14,11 +14,14 @@ const NAV = [
   ['circuits/', 'Circuits'],
   ['components/', 'Components'],
   ['manual/', 'Manual'],
-  ['about.html', 'About'],
+  ['about', 'About'],
 ];
 
 /** '../' repeated once per directory in a page path ('circuits/x.html' -> '../'). */
 export const rootOf = (path) => '../'.repeat(path.split('/').length - 1);
+
+/** Clean extensionless URL path ('index.html' -> '', 'circuits/index.html' -> 'circuits/', 'about.html' -> 'about'). */
+export const cleanPath = (path) => path.replace(/(?:^|\/)index\.html$/, (m) => (m.startsWith('/') ? '/' : '')).replace(/\.html$/, '');
 
 /**
  * Build the page shell.
@@ -30,7 +33,7 @@ export const rootOf = (path) => '../'.repeat(path.split('/').length - 1);
  */
 export function page({ siteUrl, path, root = rootOf(path), section = '', title, description, body, wide = false, jsonld, noindex = false }) {
   const known = siteUrl && siteUrl !== '/';
-  const url = known ? siteUrl + path.replace(/index\.html$/, '') : '';
+  const url = known ? siteUrl + cleanPath(path) : '';
   const ld = jsonld ? `<script type="application/ld+json">${JSON.stringify(jsonld).replace(/</g, '\\u003c')}</script>` : '';
   const nav = NAV.map(
     ([href, label]) => `<a href="${root}${href}"${section === href ? ' aria-current="page"' : ''}>${label}</a>`,
@@ -76,7 +79,7 @@ ${body}
     <a href="https://nonogramrevisited.com/" target="_blank" rel="noopener noreferrer">Nonogram Revisited</a> ·
     <a href="https://logisimrevisited.com/" target="_blank" rel="noopener noreferrer">Logisim Revisited</a>
   </p>
-  <p><a href="${REPO}">GitHub</a> · <a href="${REPO}/commits/main">Changelog</a> · <a href="https://sourceforge.net/projects/circuit/">Original Logisim</a> · <a href="${root}about.html">About and license</a> · <a href="${root}privacy.html">Privacy</a></p>
+  <p><a href="${REPO}">GitHub</a> · <a href="${REPO}/commits/main">Changelog</a> · <a href="https://sourceforge.net/projects/circuit/">Original Logisim</a> · <a href="${root}about">About and license</a> · <a href="${root}privacy">Privacy</a></p>
 </footer>
 </body>
 </html>`;
