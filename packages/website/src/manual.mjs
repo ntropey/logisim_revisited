@@ -13,12 +13,12 @@ export const MANUAL = [
 <h2>Your first circuit</h2>
 <ol>
 <li>Pick a gate from the component palette and click the canvas to place it.</li>
-<li>Place two input pins and an output pin.</li>
+<li>Place two <a href="../components/pin.html">input pins and an output pin</a>.</li>
 <li>Choose the <strong>Wire</strong> tool and drag from one pin to another.</li>
 <li>Switch to the <strong>Poke</strong> tool and click an input to toggle it. Wires update immediately.</li>
 </ol>
 <h2>Wire colors</h2>
-<p>Green is 0, red is 1, blue is Z (floating), and a red error mark means E (a conflict). The same colors are used on every guide on this site.</p>`,
+<p>Green is 0, bright green/red is 1, blue is Z (floating), and a red error mark means E (a conflict). The same colors are used on every guide on this site.</p>`,
   },
   {
     slug: 'circuits',
@@ -30,15 +30,25 @@ export const MANUAL = [
   },
   {
     slug: 'ai-coach',
-    title: 'AI Circuit Coach',
-    summary: 'Four-stage nudges and the "why is this wire 0, 1, E or Z?" prover.',
+    title: 'Logisim AI Circuit Coach & Signal Prover',
+    summary: 'How Logisim AI works: deterministic 4-stage Socratic circuit coaching, automated truth-table verification, and the "Why is this wire 0, 1, E, or Z?" backward signal prover.',
     body: `
-<p>The coach is symbolic, not a chatbot: it reasons from the circuit itself, so its explanations are exact and work offline.</p>
-<h2>Coach me</h2>
-<p>When a circuit does not give the expected output, choose <strong>Coach me</strong>. The coach reveals help in four stages, so you can stop as soon as you have the idea:</p>
-<ol><li><strong>Where to look</strong></li><li><strong>The pattern</strong></li><li><strong>The logic</strong></li><li><strong>Conclusion</strong></li></ol>
-<h2>Why is this wire 0, 1, E or Z?</h2>
-<p>Select a pin, gate or wire and ask why it has its value. The prover walks backward from that point through the drivers that determine it. For a red E, it names the competing drivers; for a blue Z, it shows that nothing is driving the net.</p>`,
+<p><strong>Logisim AI</strong> in Logisim Revisited is a symbolic, deterministic reasoning engine built directly into the circuit simulator—not an LLM chatbot that guesses or hallucinates. Because it analyzes your live netlist and 4-state signal graph directly in the browser, every explanation is 100% faithful to your circuit and works completely offline.</p>
+<h2>Four-Stage Socratic Coaching ("Coach me")</h2>
+<p>When a circuit does not match the target truth table or behaves unexpectedly, open the <strong>AI Coach</strong> drawer and choose <strong>Coach me</strong>. Instead of giving away the entire solution at once, the coach reveals help in four progressive stages so you can stop as soon as the idea clicks:</p>
+<ol>
+<li><strong>1. Where to look:</strong> Highlights the specific component, pin, or net where the discrepancy or wiring error originates (such as an unconnected input pin or a short-circuit bus).</li>
+<li><strong>2. The pattern:</strong> Identifies the category of digital logic issue—for example, competing drivers on a <a href="../components/tunnel.html">Tunnel</a> net, an inverted Carry chain in a <a href="../circuits/full-adder.html">Full Adder</a>, or a wrong pin order on a <a href="../components/7-segment-display.html">7-Segment Display</a>.</li>
+<li><strong>3. The logic:</strong> Shows the exact input combination (truth-table row) where your circuit’s actual output diverges from the expected Boolean output, or traces the controlling input on an <a href="../components/and-gate.html">AND</a>, <a href="../components/or-gate.html">OR</a>, or <a href="../components/xor-gate.html">XOR Gate</a>.</li>
+<li><strong>4. Conclusion:</strong> Explains the concrete fix needed to repair the circuit.</li>
+</ol>
+<h2>"Why is this wire 0, 1, E, or Z?" Signal Prover</h2>
+<p>Click any wire, <a href="../components/pin.html">Pin</a>, <a href="../components/probe.html">Probe</a>, flip-flop (<a href="../components/s-r-flip-flop.html">S-R</a>, <a href="../components/t-flip-flop.html">T</a>, <a href="../components/j-k-flip-flop.html">J-K</a>, or <a href="../components/d-flip-flop.html">D Flip-Flop</a>), or gate on the schematic and ask <strong>Why?</strong> The backward signal provenance tracer walks upstream from that point through every gate and net that determines its current state:</p>
+<ul>
+<li><strong>Why is this 0 or 1?</strong> Traces the active driving gate and highlights whether a controlling input (such as a single <span class="mono">0</span> on an AND gate or <span class="mono">1</span> on an OR gate) determined the output.</li>
+<li><strong>Why is this E (red conflict)?</strong> Pinpoints the two or more competing outputs driving <span class="mono">0</span> and <span class="mono">1</span> onto the same wire simultaneously, or identifies the upstream floating/invalid input propagating an error. Try it live in the <a href="../circuits/short-circuit-demo.html">Short-Circuit Demo</a>.</li>
+<li><strong>Why is this Z (blue floating)?</strong> Shows that no active output pin is driving the net (for example, an unconnected wire or a <a href="../components/controlled-buffer.html">Tri-State Buffer</a> whose Enable pin is <span class="mono">0</span>).</li>
+</ul>`,
   },
   {
     slug: 'k-map',

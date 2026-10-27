@@ -120,13 +120,13 @@ function truthTableHtml(slug) {
 
 add('index.html', {
   wide: true,
-  title: 'Logisim Revisited: digital logic circuit simulator with AI Coach',
-  description: 'Free digital logic circuit simulator with AI Coach, Karnaugh maps, and .circ compatibility. No Java and no install.',
+  title: 'Logisim Online & AI Circuit Coach | Logisim Revisited (No Java)',
+  description: 'Run Logisim online in your browser with no Java required: 4-state digital logic simulator, Logisim AI Circuit Coach & signal prover, Karnaugh map solver, and .circ compatibility.',
   jsonld: {
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
     name: 'Logisim Revisited',
-    description: 'Digital logic circuit simulator with an AI Coach, Karnaugh maps and Logisim .circ compatibility, in the browser.',
+    description: 'Run Logisim online in the browser with no Java: 4-state digital logic circuit simulator, Logisim AI Circuit Coach, Karnaugh maps, and .circ file compatibility.',
     url: abs(''),
     applicationCategory: 'EducationalApplication',
     operatingSystem: 'Any (web browser)',
@@ -134,19 +134,19 @@ add('index.html', {
   },
   body: `<section class="hero">
   <div>
-    <p class="eyebrow">The digital logic simulator rebuilt for the web</p>
+    <p class="eyebrow">Logisim online — rebuilt for the browser (no Java)</p>
     <h1>Every circuit step, explained.</h1>
-    <p class="lead">A free digital logic simulator with the engine, AI Coach, K-map analyzer and .circ import and export rebuilt in TypeScript. No Java. Ask why any pin or wire is 0, 1, E (red) or Z (blue), or get step-by-step nudges.</p>
+    <p class="lead">Run Logisim online with the 4-state simulation engine, symbolic <strong>Logisim AI Circuit Coach</strong>, Karnaugh map analyzer, and Logisim 2.7.1 <span class="mono">.circ</span> import/export rebuilt in TypeScript. Ask why any pin or wire is 0, 1, E (red) or Z (blue), or get 4-stage Socratic nudges.</p>
     <div class="actions"><a class="btn" href="play/">Open the simulator</a> <a class="btn alt" href="play/?daily=1">Daily challenge</a> <a class="btn alt" href="circuits/">Browse circuits</a></div>
   </div>
   <figure class="gatecard">${circuitSchematic('half-adder')}<figcaption>A half adder with A = 1 and B = 1, drawn by the simulator: Sum is A XOR B, Carry is A AND B.</figcaption></figure>
 </section>
 <section class="spotlight">
   <div>
-    <p class="eyebrow">AI Circuit Coach</p>
+    <p class="eyebrow">Logisim AI Circuit Coach &amp; Signal Prover</p>
     <h2>Ask "why?" about any wire, and watch the proof unfold.</h2>
-    <p class="lead">Select a wire or pin and ask why it has its value. The coach traces the drivers behind it and highlights the exact cause.</p>
-    <p><a class="btn" href="manual/ai-coach.html">How the coach works →</a></p>
+    <p class="lead">Select a wire, <a href="components/pin.html">Input/Output Pin</a>, flip-flop, or gate and ask why it has its value. The symbolic AI Coach traces the upstream drivers behind it and highlights the exact cause.</p>
+    <p><a class="btn" href="manual/ai-coach.html">How the AI Coach works →</a></p>
   </div>
   <div class="coach-quote">
     <div class="mono"><strong>1. Where to look</strong> → <strong>2. The pattern</strong> → <strong>3. The logic</strong> → <strong>4. Conclusion</strong></div>
@@ -154,12 +154,12 @@ add('index.html', {
   </div>
 </section>
 <section class="cards">
-  <article><p class="eyebrow">Simulator</p><h2>4-state logic</h2><p>0, 1, Z and E on single wires and buses up to 32 bits, with the classic Logisim component libraries.</p></article>
+  <article><p class="eyebrow">Simulator</p><h2>4-state logic</h2><p>0, 1, Z and E on single wires and buses up to 32 bits across all 41 classic <a href="components/">Logisim components</a>.</p></article>
   <article><p class="eyebrow">K-Map Analyzer</p><h2>Truth table to circuit</h2><p>Minimize with Quine-McCluskey, see the loops on a Gray-code map, then synthesize gates in one click.</p></article>
   <article><p class="eyebrow">Compatible</p><h2>.circ import and export</h2><p>Open classic Logisim 2.7.1 files in the browser, and save back for the original program.</p></article>
   <article><p class="eyebrow">Practice</p><h2>Daily challenges</h2><p>A new design or troubleshooting puzzle every day, with shareable results.</p></article>
 </section>
-<section class="learnhome"><p>New to digital logic? Read <a href="learn/how-digital-works.html">how digital logic works</a> or the <a href="learn/k-map-tutorial.html">Karnaugh map tutorial</a>. Looking for a Java-free Logisim? See <a href="learn/logisim-online-no-java.html">Logisim online</a>.</p></section>
+<section class="learnhome"><p>Popular references: <a href="components/7-segment-display.html">7-Segment Display Pins</a> · <a href="components/s-r-flip-flop.html">S-R Flip-Flop</a> · <a href="components/t-flip-flop.html">T Flip-Flop</a> · <a href="components/xor-gate.html">XOR Logic Gate</a> · <a href="components/pin.html">Input Pin</a> · <a href="components/tunnel.html">Tunnel</a>. Looking for a Java-free Logisim? See <a href="learn/logisim-online-no-java.html">Logisim Online (No Java)</a>.</p></section>
 <section class="trust"><p>Runs entirely in your browser. Works offline once installed.</p></section>`,
 });
 
@@ -257,6 +257,21 @@ const compRail = (current) =>
     items: COMP_ITEMS.map((c) => ({ href: `${c.slug}.html`, title: c.shortName, key: c.slug })),
     current,
   });
+
+function componentTruthTableHtml(tt) {
+  if (!tt) return '';
+  return `<table class="truth"><caption>${esc(tt.caption)}</caption><thead><tr>${tt.headers.map((h) => `<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${tt.rows
+    .map((r) => `<tr>${r.map((cell) => `<td>${esc(cell)}</td>`).join('')}</tr>`)
+    .join('')}</tbody></table>`;
+}
+
+function componentPinTableHtml(pinTable) {
+  if (!pinTable || !pinTable.length) return '';
+  return `<table class="ref"><thead><tr><th>Pin</th><th>Direction</th><th>Width</th><th>Location &amp; Role</th></tr></thead><tbody>${pinTable
+    .map(([pin, dir, width, role]) => `<tr><td><span class="mono">${esc(pin)}</span></td><td>${esc(dir)}</td><td><span class="mono">${esc(width)}</span></td><td>${esc(role)}</td></tr>`)
+    .join('')}</tbody></table>`;
+}
+
 add('components/index.html', {
   section: 'components/',
   wide: true,
@@ -275,17 +290,21 @@ ${COMPONENT_CATEGORIES.map(
 ).join('\n')}
 </div></div>`,
 });
-COMP_ITEMS.forEach((c) => {
+COMP_ITEMS.forEach((c, i) => {
+  const prev = COMP_ITEMS[i - 1];
+  const next = COMP_ITEMS[i + 1];
+  const pageTitle = c.seoTitle ? `${c.seoTitle} | Logisim Revisited` : `${c.shortName} (${c.type}) | Logisim Revisited Components`;
+  const heading = c.h1 || c.shortName;
   add(`components/${c.slug}.html`, {
     section: 'components/',
     wide: true,
-    title: `${c.shortName} (${c.type}) | Logisim Revisited Components`,
+    title: pageTitle,
     description: c.desc,
-    jsonld: [article(`${c.shortName} component`, c.desc, `components/${c.slug}.html`), crumbs(['Home', ''], ['Components', 'components/'], [c.shortName, `components/${c.slug}.html`])],
+    jsonld: [article(heading, c.desc, `components/${c.slug}.html`), crumbs(['Home', ''], ['Components', 'components/'], [c.shortName, `components/${c.slug}.html`])],
     body: `<div class="with-rail">${compRail(c.slug)}
 <article class="content guide">
 <p class="crumbs"><a href="./">Components</a> / ${esc(c.category)}</p>
-<h1>${esc(c.shortName)}</h1>
+<h1>${esc(heading)}</h1>
 <p class="lead">${esc(c.desc)}</p>
 <figure class="circuit part">${componentSchematic(c.type)}<figcaption>Default settings, facing east. Pins are the dots.</figcaption></figure>
 <table class="ref">
@@ -294,6 +313,23 @@ COMP_ITEMS.forEach((c) => {
 <tr><th>Pins and defaults</th><td><span class="mono">${esc(c.pins)}</span></td></tr>
 </table>
 <p><a class="btn" href="../play/">Try it in the app</a></p>
+<h2>How the ${esc(c.shortName)} Works in Logisim</h2>
+<div class="prose">
+${(c.body ?? []).map((p) => `<p>${esc(p)}</p>`).join('\n')}
+${c.tip ? `<p class="tip"><strong>Tip:</strong> ${esc(c.tip)}</p>` : ''}
+</div>
+<h2>${esc(c.shortName)} Pins &amp; Pinout</h2>
+${componentPinTableHtml(c.pinTable)}
+${c.truthTable ? `<h2>${esc(c.shortName)} Truth Table &amp; Behavior</h2>\n${componentTruthTableHtml(c.truthTable)}` : ''}
+${
+  c.related && c.related.length
+    ? `<h2>Related Circuits &amp; Components</h2>\n<ul>${c.related.map((r) => `<li><a href="${esc(r.href)}">${esc(r.label)}</a></li>`).join('')}</ul>`
+    : ''
+}
+<nav class="pager">
+${prev ? `<a href="${prev.slug}.html"><small>Previous</small>← ${esc(prev.shortName)}</a>` : '<span></span>'}
+${next ? `<a href="${next.slug}.html"><small>Next</small>${esc(next.shortName)} →</a>` : '<span></span>'}
+</nav>
 </article>
 </div>`,
   });
@@ -377,6 +413,7 @@ const hostname = siteUrl !== '/' ? new URL(siteUrl).hostname : '';
 if (hostname && !hostname.endsWith('github.io')) writeFileSync(join(out, 'CNAME'), hostname + '\n');
 
 writeFileSync(join(out, 'ads.txt'), `google.com, pub-${ADSENSE_CLIENT.replace('ca-pub-', '')}, DIRECT, f08c47fec0942fa0\n`);
+writeFileSync(join(out, '_redirects'), '/circuits/sr-latch.html /circuits/jk-flip-flop.html 301\n');
 
 const gated = Boolean(process.env.SITE_PASSWORD);
 if (!gated && siteUrl !== '/') {

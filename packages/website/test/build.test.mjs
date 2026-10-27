@@ -20,7 +20,7 @@ function htmlFiles(dir) {
 
 test('dist exists with the core pages', () => {
   assert.ok(existsSync(dist), 'dist/ missing: run the website build first');
-  for (const page of ['index.html', 'about.html', 'privacy.html', '404.html']) {
+  for (const page of ['index.html', 'about.html', 'privacy.html', '404.html', '_redirects']) {
     assert.ok(existsSync(join(dist, page)), `${page} missing`);
   }
 });
@@ -71,6 +71,62 @@ test('every circuit guide and component page has a rendered schematic', () => {
   }
 });
 
+test('every component reference page has substantive documentation, pinout table, and prose', () => {
+  const compDir = join(dist, 'components');
+  const files = readdirSync(compDir).filter((f) => f.endsWith('.html') && f !== 'index.html');
+  assert.ok(files.length >= 41, `expected at least 41 component pages, got ${files.length}`);
+  for (const name of files) {
+    const html = readFileSync(join(compDir, name), 'utf8');
+    const h2Count = [...html.matchAll(/<h2>/g)].length;
+    assert.ok(h2Count >= 3, `components/${name} should have at least 3 <h2> sections (got ${h2Count})`);
+    assert.match(html, /Pins &amp; Pinout<\/h2>/, `components/${name} missing pinout section`);
+    assert.match(html, /<th>Location &amp; Role<\/th>/, `components/${name} missing pin table headers`);
+    const articleMatch = html.match(/<article class="content guide">([\s\S]*?)<\/article>/);
+    assert.ok(articleMatch, `components/${name} missing article`);
+    const plainText = articleMatch[1].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    assert.ok(plainText.length >= 600, `components/${name} article prose too short (${plainText.length} chars)`);
+  }
+});
+
+test('top Search Console component and landing pages contain targeted pinouts and truth tables', () => {
+  const seg7 = readFileSync(join(dist, 'components', '7-segment-display.html'), 'utf8');
+  assert.match(seg7, /<title>7-Segment Display Pins &amp; Pinout in Logisim \| Logisim Revisited<\/title>/);
+  assert.match(seg7, /seg_g \(g\)/);
+  assert.match(seg7, /seg_dp \(dp\)/);
+  assert.match(seg7, /hex-digit-display\.html/);
+
+  const sr = readFileSync(join(dist, 'components', 's-r-flip-flop.html'), 'utf8');
+  assert.match(sr, /<title>S-R Flip-Flop in Logisim/);
+  assert.match(sr, /Invalid \/ Forbidden/);
+  assert.match(sr, /jk-flip-flop\.html/);
+
+  const tff = readFileSync(join(dist, 'components', 't-flip-flop.html'), 'utf8');
+  assert.match(tff, /<title>T Flip-Flop \(Toggle Flip-Flop\) in Logisim/);
+  assert.match(tff, /divide-by-2 frequency divider/);
+  assert.match(tff, /Toggle state/);
+
+  const xor = readFileSync(join(dist, 'components', 'xor-gate.html'), 'utf8');
+  assert.match(xor, /<title>XOR Logic Gate \(Exclusive OR\) in Logisim/);
+  assert.match(xor, /A·~B \+ ~A·B/);
+  assert.match(xor, /half-adder\.html/);
+
+  const pin = readFileSync(join(dist, 'components', 'pin.html'), 'utf8');
+  assert.match(pin, /<title>Input Pin &amp; Output Pin in Logisim/);
+  assert.match(pin, /Poke tool/);
+  assert.match(pin, /Select tool/);
+
+  const tunnel = readFileSync(join(dist, 'components', 'tunnel.html'), 'utf8');
+  assert.match(tunnel, /<title>Tunnel in Logisim — How to Connect Wires Without Crossing/);
+  assert.match(tunnel, /case-sensitive/);
+  assert.match(tunnel, /short-circuit-demo\.html/);
+
+  const aiCoach = readFileSync(join(dist, 'manual', 'ai-coach.html'), 'utf8');
+  assert.match(aiCoach, /Logisim AI Circuit Coach &amp; Signal Prover/);
+
+  const online = readFileSync(join(dist, 'learn', 'logisim-online-no-java.html'), 'utf8');
+  assert.match(online, /Logisim Online in Your Browser \(No Java Required\)/);
+});
+
 test('combinational guides show a simulated truth table with the right answers', () => {
   const html = readFileSync(join(dist, 'circuits', 'half-adder.html'), 'utf8');
   const rows = [...html.matchAll(/<tr><td>(\d)<\/td><td>(\d)<\/td><td class="out v\w">(\w)<\/td><td class="out v\w">(\w)<\/td><\/tr>/g)].map((m) => m.slice(1).join(''));
@@ -79,9 +135,11 @@ test('combinational guides show a simulated truth table with the right answers',
   assert.doesNotMatch(readFileSync(join(dist, 'circuits', 'jk-flip-flop.html'), 'utf8'), /<table class="truth"/);
 });
 
-test('the renamed flip-flop guide keeps its old address', () => {
+test('the renamed flip-flop guide keeps its old address in HTML and _redirects', () => {
   const html = readFileSync(join(dist, 'circuits', 'sr-latch.html'), 'utf8');
   assert.match(html, /http-equiv="refresh" content="0; url=jk-flip-flop.html"/);
+  const redirects = readFileSync(join(dist, '_redirects'), 'utf8');
+  assert.match(redirects, /^\/circuits\/sr-latch\.html \/circuits\/jk-flip-flop\.html 301$/m);
 });
 
 test('no template leaks such as undefined, null or NaN in page text', () => {
