@@ -73,9 +73,20 @@ describe('@logisim/core preset circuits & discrete-event simulator', () => {
     const alu = PRESET_CIRCUITS.find((p) => p.slug === '4-bit-alu')!;
     const simAlu = simulateCircuit(alu.circuit);
     expect(valueToInt(simAlu.pinValues.out_res.in0)).toBe(8);
+
+    // 3-Bit Odd Parity Checker (xor-parity) exhaustive verification across all 8 input vectors
+    const xorParity = PRESET_CIRCUITS.find((p) => p.slug === 'xor-parity')!;
+    const verParity = verifyCircuitTruthTable(
+      xorParity.circuit,
+      ['A', 'B', 'C'],
+      ['Parity'],
+      ({ A, B, C }) => ({ Parity: (A ^ B ^ C) & 1 }),
+    );
+    expect(verParity.passed).toBe(true);
+    expect(verParity.passedRows).toBe(8);
   });
 
-  it('steps sequential J-K Flip-Flop and 4-bit Counter on rising clock edges', () => {
+  it('steps sequential J-K, S-R, T, and D Flip-Flops and 4-bit Counter on rising clock edges', () => {
     const jkPreset = PRESET_CIRCUITS.find((p) => p.slug === 'jk-flip-flop')!;
     let cir = jkPreset.circuit;
     let mem = createEmptyMemoryState();
@@ -98,6 +109,25 @@ describe('@logisim/core preset circuits & discrete-event simulator', () => {
     // Second rising clock edge (0 -> 1) toggles Q back to 0
     const tick3 = stepClockTick(cir, mem);
     expect(valueToDisplayString(tick3.result.pinValues.out_q.in0)).toBe('0');
+
+    // S-R Flip-Flop preset (S=1, R=0 sets Q=1 on rising edge)
+    const srPreset = PRESET_CIRCUITS.find((p) => p.slug === 'sr-latch')!;
+    const srSim0 = simulateCircuit(srPreset.circuit, createEmptyMemoryState());
+    const srTick1 = stepClockTick(srPreset.circuit, srSim0.memState);
+    expect(valueToDisplayString(srTick1.result.pinValues.out_q.in0)).toBe('1');
+    expect(valueToDisplayString(srTick1.result.pinValues.out_qn.in0)).toBe('0');
+
+    // T Flip-Flop preset (T=1 toggles Q on rising edge)
+    const tPreset = PRESET_CIRCUITS.find((p) => p.slug === 't-flip-flop')!;
+    const tSim0 = simulateCircuit(tPreset.circuit, createEmptyMemoryState());
+    const tTick1 = stepClockTick(tPreset.circuit, tSim0.memState);
+    expect(valueToDisplayString(tTick1.result.pinValues.out_q.in0)).toBe('1');
+
+    // D Flip-Flop preset (D=1 captures Q=1 on rising edge)
+    const dPreset = PRESET_CIRCUITS.find((p) => p.slug === 'd-flip-flop')!;
+    const dSim0 = simulateCircuit(dPreset.circuit, createEmptyMemoryState());
+    const dTick1 = stepClockTick(dPreset.circuit, dSim0.memState);
+    expect(valueToDisplayString(dTick1.result.pinValues.out_q.in0)).toBe('1');
   });
 
   it('traces signal provenance and diagnoses short-circuit bus contention (E)', () => {

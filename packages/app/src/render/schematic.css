@@ -11,4 +11,6 @@
 .glyph-pin { font: 500 8.5px var(--font-mono); fill: var(--muted); pointer-events: none; }
 .pin-dot { stroke: var(--card); stroke-width: 1; pointer-events: none; }
 .wire { stroke-linecap: round; pointer-events: none; transition: stroke .1s; }
+.bus-badge { fill: var(--card); stroke-width: 1.5; pointer-events: none; }
+.bus-badge-text { font: 600 9.5px var(--font-mono); fill: var(--fg); pointer-events: none; }
 .schematic { max-width: 100%; height: auto; overflow: visible; }

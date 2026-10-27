@@ -4,8 +4,8 @@
  */
 import { forwardRef, useCallback, useImperativeHandle, useLayoutEffect, useRef, useState } from 'react';
 import { getComponentPins, isPointOnWire, pokeComponent, pointKey, type Circuit, type ComponentInstance, type Point, type SimulationResult, type Wire } from '@logisim/core';
-import { junctionPoints } from '../render/schematic';
-import { Glyph, valueColor } from './Glyph';
+import { busBadgePrims, junctionPoints } from '../render/schematic';
+import { Glyph, PrimEl, valueColor } from './Glyph';
 import { distToSegment, hitComponent, hitPin, snap, worldBounds } from '../render/geometry';
 import { makeComponent, uid, type Tool } from './tools';
 
@@ -363,6 +363,7 @@ export const Canvas = forwardRef<CanvasHandle, Props>(function Canvas(props, ref
         {junctions.map((p) => (
           <circle key={pointKey(p)} cx={p.x} cy={p.y} r={4} fill={valueColor(sim.netValues[netAt(p) ?? ''])} />
         ))}
+        {showValues && busBadgePrims(circuit, sim).map((p, i) => <PrimEl key={`bus-${i}`} p={p} />)}
         {circuit.components.map((c) => (
           <Glyph key={c.id} comp={c} sim={sim} selected={selection.comps.has(c.id)} highlighted={highlight.components.has(c.id)} showValues={showValues} />
         ))}

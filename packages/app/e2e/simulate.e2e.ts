@@ -42,8 +42,8 @@ test('the circuit is saved and comes back after a reload', async ({ page }) => {
   await expect(valueOf(page, 'out_sum')).toHaveText('1');
 });
 
-test('the old flip-flop link still opens the J-K example, and Tick clocks it', async ({ page }) => {
-  await page.goto('/?p=sr-latch');
+test('flip-flop presets open from URL and Tick clocks them', async ({ page }) => {
+  await page.goto('/?p=jk-flip-flop');
   await expect(page.getByLabel('Circuit name')).toHaveValue('J-K Flip-Flop');
   await expect(valueOf(page, 'out_q')).toHaveText('0');
   const tick = page.getByTitle('Toggle every clock');
@@ -54,4 +54,10 @@ test('the old flip-flop link still opens the J-K example, and Tick clocks it', a
   await expect(valueOf(page, 'out_q')).toHaveText('1');
   await tick.click(); // rising edge: toggle back
   await expect(valueOf(page, 'out_q')).toHaveText('0');
+
+  await page.goto('/?p=sr-latch');
+  await expect(page.getByLabel('Circuit name')).toHaveValue('S-R Flip-Flop');
+  await expect(valueOf(page, 'out_q')).toHaveText('0');
+  await tick.click(); // rising edge with S = 1, R = 0: set Q = 1
+  await expect(valueOf(page, 'out_q')).toHaveText('1');
 });

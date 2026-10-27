@@ -690,6 +690,7 @@ export const COMPONENTS = [
     },
     tip: 'Use an XOR gate as a controlled inverter: wire your signal to one input and an Invert control line to the other (when Control=0 the signal passes unchanged; when Control=1 it is inverted).',
     related: [
+      { href: '../circuits/xor-parity.html', label: 'XOR Gate & 3-Bit Odd Parity circuit guide' },
       { href: '../circuits/half-adder.html', label: 'Half Adder circuit guide' },
       { href: '../circuits/full-adder.html', label: 'Full Adder circuit guide' },
       { href: 'xnor-gate.html', label: 'XNOR Gate (Equivalence)' },
@@ -1165,6 +1166,7 @@ export const COMPONENTS = [
     },
     tip: 'Wire ~Q back to D to make a D Flip-Flop toggle its state on every rising clock edge, or chain several D Flip-Flops in series (Q into the next D) to build a shift register.',
     related: [
+      { href: '../circuits/d-flip-flop.html', label: 'Interactive D Flip-Flop circuit guide' },
       { href: 't-flip-flop.html', label: 'T Flip-Flop' },
       { href: 'j-k-flip-flop.html', label: 'J-K Flip-Flop' },
       { href: 's-r-flip-flop.html', label: 'S-R Flip-Flop' },
@@ -1204,6 +1206,7 @@ export const COMPONENTS = [
     },
     tip: 'To build a divide-by-2 frequency divider or binary counter stage in Logisim, tie the T input to a Constant 1 (or Power) and feed your clock pulse into CLK.',
     related: [
+      { href: '../circuits/t-flip-flop.html', label: 'T Flip-Flop Frequency Divider circuit guide' },
       { href: 'j-k-flip-flop.html', label: 'J-K Flip-Flop (J=K=1 toggles)' },
       { href: 'd-flip-flop.html', label: 'D Flip-Flop' },
       { href: 's-r-flip-flop.html', label: 'S-R Flip-Flop' },
@@ -1284,6 +1287,7 @@ export const COMPONENTS = [
     },
     tip: 'If your state machine ever needs both inputs High (1, 1) to toggle the output, replace the S-R Flip-Flop with a J-K Flip-Flop—their pin locations are identical so your existing wires will snap right in.',
     related: [
+      { href: '../circuits/sr-latch.html', label: 'Interactive S-R Flip-Flop circuit guide' },
       { href: '../circuits/jk-flip-flop.html', label: 'J-K Flip-Flop interactive circuit guide' },
       { href: 'j-k-flip-flop.html', label: 'J-K Flip-Flop component' },
       { href: 'd-flip-flop.html', label: 'D Flip-Flop component' },
