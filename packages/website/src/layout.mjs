@@ -45,7 +45,7 @@ export function page({ siteUrl, path, root = rootOf(path), section = '', title, 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(description)}">
-${noindex ? '<meta name="robots" content="noindex">\n' : ''}${url ? `<link rel="canonical" href="${url}">\n<meta property="og:url" content="${url}">\n<meta property="og:image" content="${siteUrl}icon-512.png">\n` : ''}<meta property="og:type" content="website">
+${noindex ? '<meta name="robots" content="noindex">\n' : ''}${url ? `<link rel="canonical" href="${url}">\n<meta property="og:url" content="${url}">\n` : ''}<meta property="og:image" content="${url ? siteUrl : 'https://logisimrevisited.com/'}og-image.png">\n<meta name="twitter:image" content="${url ? siteUrl : 'https://logisimrevisited.com/'}og-image.png">\n<meta property="og:type" content="website">
 <meta property="og:site_name" content="Logisim Revisited">
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(description)}">

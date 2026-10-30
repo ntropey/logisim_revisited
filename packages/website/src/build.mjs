@@ -390,7 +390,7 @@ for (const [path, html] of pages) {
 }
 writeFileSync(join(out, 'site.css'), SITE_CSS);
 
-for (const f of ['icon.svg', 'favicon.svg', 'apple-touch-icon.png', 'icon-512.png']) {
+for (const f of ['icon.svg', 'favicon.svg', 'apple-touch-icon.png', 'icon-512.png', 'og-image.png']) {
   if (!existsSync(join(appPublic, f))) throw new Error(`missing packages/app/public/${f}`);
   cpSync(join(appPublic, f), join(out, f));
 }
