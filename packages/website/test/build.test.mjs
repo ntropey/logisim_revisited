@@ -183,3 +183,11 @@ test('no template leaks such as undefined, null or NaN in page text', () => {
     assert.doesNotMatch(text, /\b(undefined|null|NaN)\b/, file);
   }
 });
+
+test('emits an Android App Links template', () => {
+  const links = JSON.parse(readFileSync(join(dist, '.well-known/assetlinks.json'), 'utf8'));
+  assert.equal(links[0].relation[0], 'delegate_permission/common.handle_all_urls');
+  assert.equal(links[0].target.namespace, 'android_app');
+  assert.equal(links[0].target.package_name, 'com.revisitedlabs.logisim');
+  assert.equal(links[0].target.sha256_cert_fingerprints[0], 'PLACEHOLDER_SHA256_CERT_FINGERPRINT');
+});
