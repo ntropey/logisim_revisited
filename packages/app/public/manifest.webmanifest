@@ -1,14 +1,17 @@
 {
+  "id": "https://logisimrevisited.com/play/",
   "name": "Logisim Revisited",
   "short_name": "Logisim",
   "description": "Digital logic circuit simulator with an AI Coach, Karnaugh maps and .circ compatibility",
-  "start_url": "./",
-  "scope": "./",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#F5F2EA",
   "theme_color": "#2B4EA2",
+  "categories": ["education", "utilities"],
   "icons": [
     { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
     { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
   ]
 }
