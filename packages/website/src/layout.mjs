@@ -43,6 +43,7 @@ export function page({ siteUrl, path, root = rootOf(path), section = '', title, 
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="google-adsense-account" content="ca-pub-6409516653999633">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(description)}">
 ${noindex ? '<meta name="robots" content="noindex">\n' : ''}${url ? `<link rel="canonical" href="${url}">\n<meta property="og:url" content="${url}">\n` : ''}<meta property="og:image" content="${url ? siteUrl : 'https://logisimrevisited.com/'}og-image.png">\n<meta name="twitter:image" content="${url ? siteUrl : 'https://logisimrevisited.com/'}og-image.png">\n<meta property="og:type" content="website">
