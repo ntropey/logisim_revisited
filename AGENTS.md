@@ -73,5 +73,6 @@ ignores them). Locally Playwright uses the preinstalled Chromium; CI installs it
   Style: **2-space indent, single quotes, semicolons.**
 - **American spelling.** UI text, docs, and comments use American spelling (`color`, `behavior`,
   `center`, `labeled`, `gray`). A website test fails if British spellings appear.
+- **Branding and sister sites.** Logisim Revisited is part of **[Revisited Labs](https://revisitedlabs.com)**. Follow the master brand identity and design tokens defined in `c:\dev\revisited_labs\BRAND.md` and `c:\dev\revisited_labs\docs\brand-guidelines.md`. Always refer to the coach as a **Symbolic AI Coach** or **Socratic Coach** (not a chatbot or LLM). Maintain the footer endorsement link to `https://revisitedlabs.com` and cross-links to sister sites (`hodokurevisited.com`, `kakurorevisited.com`, `nonogramrevisited.com`).
 - **Git workflow.** Never commit or push directly to `main`; always work on a feature branch and open
   a pull request. Commit subjects read `Area: summary`, lowercase after the colon.

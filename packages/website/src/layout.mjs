@@ -74,11 +74,11 @@ ${body}
 <footer>
   <p>Free digital logic circuit simulator with AI Coach, based on Logisim 2.7.1. Free software under the GPL (GPL-3.0-or-later), with no warranty.</p>
   <p style="font-size:.75rem;color:var(--muted);margin-top:8px">
-    More tools:
+    Part of <a href="https://revisitedlabs.com/" target="_blank" rel="noopener noreferrer"><strong>Revisited Labs</strong></a>:
     <a href="https://hodokurevisited.com/" target="_blank" rel="noopener noreferrer">Hodoku Revisited</a> ·
     <a href="https://kakurorevisited.com/" target="_blank" rel="noopener noreferrer">Kakuro Revisited</a> ·
     <a href="https://nonogramrevisited.com/" target="_blank" rel="noopener noreferrer">Nonogram Revisited</a> ·
-    <a href="https://logisimrevisited.com/" target="_blank" rel="noopener noreferrer">Logisim Revisited</a>
+    <a href="https://dolcecolore.com/" target="_blank" rel="noopener noreferrer">Dolce Colore</a>
   </p>
   <p><a href="${REPO}">GitHub</a> · <a href="${REPO}/commits/main">Changelog</a> · <a href="https://sourceforge.net/projects/circuit/">Original Logisim</a> · <a href="${root}about">About and license</a> · <a href="${root}privacy">Privacy</a></p>
 </footer>

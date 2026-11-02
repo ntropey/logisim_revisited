@@ -31,7 +31,10 @@ export function SettingsSheet({ settings, onChange, onClose }: Props) {
       <label className="check">
         <input type="checkbox" checked={settings.showValues} onChange={(e) => onChange({ showValues: e.target.checked })} /> Show values on pins and probes
       </label>
-      <h3>Privacy</h3>
+      <h3>About & Privacy</h3>
+      <p className="muted">
+        Part of <a href="https://revisitedlabs.com/" target="_blank" rel="noreferrer">Revisited Labs</a>. Based on Carl Burch's Logisim 2.7.1.
+      </p>
       <p className="muted">
         Your circuit and these settings are stored only in this browser. The simulator runs on your device and sends nothing anywhere. This app loads no
         ads; see the <a href="../privacy.html">privacy page</a> for the website.
