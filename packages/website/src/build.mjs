@@ -429,7 +429,10 @@ writeFileSync(
         target: {
           namespace: 'android_app',
           package_name: 'com.revisitedlabs.logisim',
-          sha256_cert_fingerprints: ['PLACEHOLDER_SHA256_CERT_FINGERPRINT'],
+          sha256_cert_fingerprints: [
+            '53:4D:E5:85:36:B6:35:6C:DA:3D:DD:03:F7:B7:BA:11:53:37:5C:B7:BB:2B:FB:AA:1A:A4:72:ED:FE:6E:ED:6D',
+            'EB:07:61:8A:8E:0F:87:A8:85:C7:7C:1B:4A:B5:FB:0B:ED:F1:22:7E:BB:E0:29:38:E6:05:41:82:7A:64:DE:10',
+          ],
         },
       },
     ],

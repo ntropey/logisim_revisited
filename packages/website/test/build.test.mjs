@@ -189,5 +189,5 @@ test('emits an Android App Links template', () => {
   assert.equal(links[0].relation[0], 'delegate_permission/common.handle_all_urls');
   assert.equal(links[0].target.namespace, 'android_app');
   assert.equal(links[0].target.package_name, 'com.revisitedlabs.logisim');
-  assert.equal(links[0].target.sha256_cert_fingerprints[0], 'PLACEHOLDER_SHA256_CERT_FINGERPRINT');
+  assert.ok(links[0].target.sha256_cert_fingerprints.includes('53:4D:E5:85:36:B6:35:6C:DA:3D:DD:03:F7:B7:BA:11:53:37:5C:B7:BB:2B:FB:AA:1A:A4:72:ED:FE:6E:ED:6D'));
 });
